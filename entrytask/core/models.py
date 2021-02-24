@@ -9,7 +9,8 @@ class User(models.Model):
     username = models.CharField(max_length=50, unique=True)
     fullname = models.CharField(max_length=100)
     email = models.EmailField(max_length=70)
-    salted_password = models.CharField(max_length=60)
+    salt = models.CharField(max_length=60)
+    salted_password = models.CharField(max_length=120)
 
     class Meta:
         db_table = 'user_tab'

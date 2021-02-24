@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '-a_b^ecwjgd-djh8ddf!yz6g6ln117azf!)!d)v%pzdw2r%2=^'
-
+PASSWORD_SALT = 'aadsdjlk1j2312jlasldkj1l23jlkjdasd123'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -80,6 +80,13 @@ DATABASES = {
         'PASSWORD': 'foody',
         'HOST': 'localhost',
         'PORT': 3306
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211'
     }
 }
 
