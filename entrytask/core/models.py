@@ -42,11 +42,13 @@ class Event(models.Model):
     create_uid = models.BigIntegerField()
     create_time = models.PositiveIntegerField()
     update_time = models.PositiveIntegerField()
+    location = models.CharField(max_length=100, null=True)
     channel = models.CharField(max_length=50)
     image_url = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'event_tab'
+        ordering = ['id']
         indexes = [models.Index(fields=['id', 'channel'])]
 
 
