@@ -4,6 +4,8 @@ from django.http import HttpResponse, JsonResponse
 
 
 def json_response(data):
+    if isinstance(data, dict):
+        return JsonResponse(data)
     return JsonResponse(model_to_dict(data))
 
 

@@ -15,10 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url
 from core import views as core_view
-from core.custom_views import event
+from core.custom_views import event, user
 
 urlpatterns = [
     url(r'test/$', core_view.test),
     url(r'event/(?P<event_id>[0-9]+)/$', event.SingleEventView.as_view(), name='specific-event'),
     url(r'event/$', event.EventView.as_view(), name='event'),
+    url(r'user/register/$', user.UserRegisterView.as_view(), name='user-register'),
+    url(r'user/prelogin/$', user.UserPreloginView.as_view(), name='user-prelogin'),
+    url(r'user/login/$', user.UserLoginView.as_view(), name='user-login'),
+    url(r'user/logout/$', user.UserLogoutView.as_view(), name='user-logout'),
+    url(r'user/(?P<user_id>[0-9]+)/$', user.UserView.as_view(), name='user')
 ]
