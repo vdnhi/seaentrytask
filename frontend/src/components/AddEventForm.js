@@ -156,7 +156,6 @@ function AddEventForm({ isOpen, toggleOpen }) {
             value={content}
             style={{ width: "100%" }}
             onChange={(e) => setContent(e.target.value)}
-            type="textarea"
             required={true}
           />
         </FormGroup>
@@ -165,13 +164,12 @@ function AddEventForm({ isOpen, toggleOpen }) {
           labelFor="text-input-location"
           labelInfo="(required)"
         >
-          <TextArea
+          <InputGroup
             id="text-input-location"
             placeholder="Location..."
             value={location}
             style={{ width: "100%" }}
             onChange={(e) => setLocation(e.target.value)}
-            type="textarea"
             required={true}
           />
         </FormGroup>

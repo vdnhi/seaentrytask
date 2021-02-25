@@ -15,7 +15,7 @@ def insert_user(user_info):
 
 
 def get_user_by_id(user_id):
-    user = User.objects.filter(user_id=user_id).first()
+    user = User.objects.filter(id=user_id).first()
     return user
 
 
