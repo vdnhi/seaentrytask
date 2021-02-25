@@ -73,7 +73,7 @@ class UserLoginView(View):
                 return error_response(400, 'Username does not exist or wrong password')
             token = string_generator(64)
             cache.set(token, {"id": user.id, "role": role, "username": user.username}, 3600)
-            return json_response({'msg': 'logged in'})
+            return json_response({'token': token})
         except ValidationError:
             return error_response(400, 'Username does not exist or wrong password')
 
