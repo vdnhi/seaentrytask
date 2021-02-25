@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views.generic import View
 
+from core.db_crud.channel import get_all_channels
 from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event
 from core.utils.response import json_response, error_response
 
@@ -28,6 +29,7 @@ class EventView(View):
 
     def post(self, *args, **kwargs):
         body_json = json.loads(self.request.body)
+        print(body_json)
         event = insert_event(body_json)
         if event is None:
             return error_response(400, 'missing data field or wrong data type')
@@ -56,3 +58,9 @@ class SingleEventView(View):
         if row_affected is None or row_affected[0] == 0:
             return error_response(500, 'delete failed')
         return JsonResponse({'msg': 'deleted event {}'.format(event_id)})
+
+
+class ChannelView(View):
+    def get(self, *args, **kwargs):
+        channels = get_all_channels()
+        return JsonResponse(channels, safe=False)

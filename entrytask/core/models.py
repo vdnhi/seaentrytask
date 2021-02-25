@@ -43,14 +43,48 @@ class Event(models.Model):
     create_uid = models.BigIntegerField()
     create_time = models.PositiveIntegerField()
     update_time = models.PositiveIntegerField()
-    location = models.CharField(max_length=100, null=True)
-    channel = models.CharField(max_length=50)
-    image_url = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'event_tab'
         ordering = ['id']
-        indexes = [models.Index(fields=['id', 'channel'])]
+        indexes = [models.Index(fields=['create_time'])]
+
+
+class Image(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    image_url = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'image_tab'
+
+
+class EventImageMapping(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    image_id = models.BigIntegerField()
+    event_id = models.BigIntegerField()
+
+    class Meta:
+        db_table = 'event_image_tab'
+        indexes = [models.Index(fields=['event_id'])]
+
+
+class Channel(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'channel_tab'
+
+
+class EventChannelMapping(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    channel_id = models.BigIntegerField()
+    event_id = models.BigIntegerField()
+
+    class Meta:
+        db_table = 'event_channel_tab'
+        indexes = [models.Index(fields=['event_id'])]
 
 
 class Comment(models.Model):
