@@ -16,8 +16,6 @@ def insert_event(event_data):
             create_time=int(event_data.get('create_time', None)),
             update_time=int(event_data.get('update_time', None)),
             location=event_data.get('location', None),
-            channel=event_data.get('channel', None),
-            image_url=event_data.get('image_url', None)
         )
         return event
     except (TypeError, DatabaseError):

@@ -4,6 +4,7 @@ import random
 import bcrypt
 from django.core.management import BaseCommand
 
+from core.db_crud.channel import insert_channel
 from core.db_crud.event import insert_event
 from core.db_crud.role import insert_role, insert_user_role
 from core.db_crud.user import insert_user
@@ -40,8 +41,6 @@ def generate_random_events(limit):
             'update_time': int(time.time()),
             'create_uid': random.randint(0, limit),
             'location': 'Location {}'.format(index),
-            'channel': 'Channel {}'.format(index),
-            'image_url': 'image_url'
         }
         event = insert_event(event_data)
         if event is None:
@@ -83,6 +82,13 @@ def generate_user_role_mapping(limit):
     print('{} user role mapping were generated, failed {}'.format(limit - count_failed, count_failed))
 
 
+def generate_channels():
+    print('Generating channel...')
+    for i in range(10):
+        insert_channel('Channel {}'.format(i))
+    print('Channel generation done!')
+
+
 def clear_data():
     Event.objects.all().delete()
     Role.objects.all().delete()
@@ -100,3 +106,4 @@ def run_seed(self, mode):
     generate_roles()
     generate_random_users(limit)
     generate_user_role_mapping(limit)
+    generate_channels()
