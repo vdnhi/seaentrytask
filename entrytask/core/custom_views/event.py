@@ -10,6 +10,9 @@ from jsonschema.validators import validate
 from core.db_crud.channel import get_all_channels
 from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event
 from core.db_crud.image import insert_image, insert_image_to_event
+from core.db_crud.like import insert_like, get_like_of_event, remove_like
+from core.db_crud.participation import get_participation_of_event, insert_participation, remove_participation
+from core.db_crud.user import get_user_by_id
 from core.schema import event_schema
 from core.utils.response import json_response, error_response
 
@@ -87,3 +90,85 @@ class UploadImageView(View):
         image_id = insert_image('/media/' + filename)
         insert_image_to_event(event_id, image_id)
         return json_response({'msg': 'upload images successful {}'.format(image_id)})
+
+
+class LikeEventView(View):
+    def get(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        likes = get_like_of_event(event_id)
+        users_id = [like.user_id for like in likes]
+        user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
+        user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
+        return JsonResponse(user_data, safe=False)
+
+    def post(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        try:
+            body_json = json.loads(self.request.body)
+            print(body_json)
+            validate(body_json, {
+                'type': 'object',
+                'properties': {
+                    'user_id': {'type': 'number'},
+                    'token': {'type': 'string'}
+                },
+                'required': ['user_id', 'token']
+            })
+            insert_like(event_id, body_json["user_id"])
+            return json_response({'msg': 'liked'})
+        except ValidationError:
+            return error_response(400, 'invalid input')
+
+    def delete(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        user_id = self.request.GET.get('user_id')
+        token = self.request.GET.get('token')
+        row_affected = remove_like(event_id, user_id)
+        if row_affected == 0:
+            return error_response(404, 'not found')
+        return json_response({'msg': 'deleted'})
+
+
+class ParticipationEventView(View):
+    def get(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        list_participant = get_participation_of_event(event_id)
+        users_id = [list_participant.user_id for participant in list_participant]
+        user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
+        user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
+        return JsonResponse(user_data, safe=False)
+
+    def post(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        try:
+            body_json = json.loads(self.request.body)
+            print(body_json)
+            validate(body_json, {
+                'type': 'object',
+                'properties': {
+                    'user_id': {'type': 'number'},
+                    'token': {'type': 'string'}
+                },
+                'required': ['user_id', 'token']
+            })
+            insert_participation(event_id, body_json["user_id"])
+            return json_response({'msg': 'liked'})
+        except ValidationError:
+            return error_response(400, 'invalid input')
+
+    def delete(self, *args, **kwargs):
+        event_id = int(self.kwargs.get('event_id'))
+        user_id = self.request.GET.get('user_id')
+        token = self.request.GET.get('token')
+        row_affected = remove_participation(event_id, user_id)
+        if row_affected == 0:
+            return error_response(404, 'not found')
+        return json_response({'msg': 'deleted'})
+
+
+class CommentEventView(View):
+    def get(self, *args, **kwargs):
+        pass
+
+    def post(self, *args, **kwargs):
+        pass

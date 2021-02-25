@@ -1,8 +1,59 @@
-import { Button, Card } from "@blueprintjs/core";
+import { Button, Card, Position } from "@blueprintjs/core";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 function FeedItem({ data }) {
+  const [countLike, setCountLike] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
   const startDate = new Date(data.start_date * 1000);
   const endDate = new Date(data.end_date * 1000);
+
+  const userId = parseInt(window.sessionStorage.getItem("userId"));
+  const token = window.sessionStorage.getItem("token");
+
+  useEffect(() => {
+    axios
+      .get(`/event/${data.id}/like/`, {
+        user_id: userId,
+      })
+      .then((response) => {
+        const usersLiked = response.data;
+        const liked =
+          usersLiked.filter((item) => item.id === userId).length > 0;
+        if (liked) {
+          setIsLiked(true);
+        }
+        setCountLike(usersLiked.length);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [countLike, isLiked]);
+
+  const handleClickLikeButton = () => {
+    if (!isLiked) {
+      axios
+        .post(`/event/${data.id}/like/`, {
+          user_id: userId,
+          token: token,
+        })
+        .then((response) => {
+          setCountLike(countLike + 1);
+          setIsLiked(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      axios
+        .delete(`/event/${data.id}/like/?user_id=${userId}&token=${token}`)
+        .then((response) => {
+          setIsLiked(false);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
   return (
     <Card>
       <div>Title: {data.title}</div>
@@ -10,7 +61,11 @@ function FeedItem({ data }) {
       <div>Location: {data.location}</div>
       <div>Start date: {startDate.toLocaleDateString()} </div>
       <div>End date: {endDate.toLocaleDateString()}</div>
-      <Button>See more</Button>
+      <div>Number of like: {countLike}</div>
+      <Button
+        text={isLiked ? "Remove like" : "Like"}
+        onClick={handleClickLikeButton}
+      />
     </Card>
   );
 }

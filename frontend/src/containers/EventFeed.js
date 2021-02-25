@@ -17,15 +17,18 @@ function EventFeed() {
 
   return (
     <div>
-      <Button
-        text="Create new event"
-        icon="add"
-        onClick={() => setDialogOpen(true)}
-      />
-      {feedItems.map((item, index) => (
-        <FeedItem data={item} key={index} />
-      ))}
-      <AddEventForm isOpen={dialogOpen} toggleOpen={setDialogOpen} />
+      <div>Left Tab</div>
+      <div>
+        <Button
+          text="Create new event"
+          icon="add"
+          onClick={() => setDialogOpen(true)}
+        />
+        {feedItems.map((item, index) => (
+          <FeedItem data={item} key={index} />
+        ))}
+        <AddEventForm isOpen={dialogOpen} toggleOpen={setDialogOpen} />
+      </div>
     </div>
   );
 }
