@@ -18,3 +18,17 @@ user_register_schema = {
         'fullname': {'type': 'string'}
     }
 }
+
+event_schema = {
+    'type': 'object',
+    'required': ['title', 'content', 'location', 'start_date', 'end_date'],
+    'properties': {
+        'title': {'type': 'string'},
+        'content': {'type': 'string'},
+        'location': {'type': 'string'},
+        'start_date': {'type': 'number'},
+        'end_date': {'type': 'number'},
+        'channels': {'type': 'array'},
+        'create_uid': {'type': 'number'}
+    }
+}

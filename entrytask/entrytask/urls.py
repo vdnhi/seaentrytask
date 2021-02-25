@@ -20,6 +20,7 @@ from core.custom_views import event, user
 urlpatterns = [
     url(r'test/$', core_view.test),
     url(r'event/(?P<event_id>[0-9]+)/$', event.SingleEventView.as_view(), name='specific-event'),
+    url(r'event/(?P<event_id>[0-9]+)/uploadImage/$', event.UploadImageView.as_view(), name='upload-image'),
     url(r'event/channel/$', event.ChannelView.as_view(), name='event-channel'),
     url(r'event/$', event.EventView.as_view(), name='event'),
     url(r'user/register/$', user.UserRegisterView.as_view(), name='user-register'),

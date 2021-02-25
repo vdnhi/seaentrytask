@@ -34,21 +34,61 @@ function AddEventForm({ isOpen, toggleOpen }) {
       .catch((error) => console.log(error));
   }, []);
 
+  const clearInput = () => {
+    setTitle("");
+    setContent("");
+    setLocation("");
+    setStartDate(null);
+    setEndDate(null);
+    setChannels([]);
+    setSelectedChannels([]);
+    setImages([]);
+  };
+
   const handleAddingEvent = () => {
     setIsAddingEvent(true);
+    const userId = parseInt(window.sessionStorage.getItem("userId"));
+    const token = window.sessionStorage.getItem("token");
+
     axios
       .post("/event/", {
         title: title,
         content: content,
-        start_time: Math.round(startDate?.getTime() / 1000),
-        end_time: Math.round(endDate?.getTime() / 1000),
+        start_date: Math.round(startDate?.getTime() / 1000),
+        end_date: Math.round(endDate?.getTime() / 1000),
         channels: selectedChannels,
         location: location,
+        create_uid: userId,
+        token: token,
       })
-      .then((response) => console.log(response))
+      .then((response) => {
+        const eventId = response.data["id"];
+        const formdata = new FormData();
+
+        formdata.append("image", images[0]);
+        formdata.append("user_id", userId);
+        formdata.append("token", token);
+
+        axios
+          .post(`/event/${eventId}/uploadImage/`, formdata, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            console.log(response);
+            toggleOpen(false);
+            clearInput();
+          })
+          .catch((error) => console.log(error));
+      })
       .catch((error) => {
         console.log(error);
-        AppToaster.show({ message: "Add event failed!", intent: "danger", timeout: 1000 });
+        AppToaster.show({
+          message: "Add event failed!",
+          intent: "danger",
+          timeout: 1000,
+        });
       });
     setIsAddingEvent(false);
   };
@@ -86,7 +126,10 @@ function AddEventForm({ isOpen, toggleOpen }) {
       icon="info-sign"
       title="Add new event"
       isOpen={isOpen}
-      onClose={() => toggleOpen(false)}
+      onClose={() => {
+        toggleOpen(false);
+        clearInput();
+      }}
     >
       <div className={Classes.DIALOG_BODY}>
         <FormGroup
@@ -146,13 +189,10 @@ function AddEventForm({ isOpen, toggleOpen }) {
             }}
             parseDate={(str) => new Date(str)}
             value={[startDate, endDate]}
+            highlightCurrentDay={true}
           />
         </FormGroup>
-        <FormGroup
-          label="Channels"
-          labelFor="multi-input-channel"
-          labelInfo="(required)"
-        >
+        <FormGroup label="Channels" labelFor="multi-input-channel">
           <MultiSelect
             fill={true}
             tagInputProps={{ placeholder: "Search for channel" }}

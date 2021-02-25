@@ -5,7 +5,7 @@ import AddEventForm from "../components/AddEventForm";
 import FeedItem from "../components/FeedItem";
 
 function EventFeed() {
-  const [feedItems, setFeedItems] = useState([{}]);
+  const [feedItems, setFeedItems] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function EventFeed() {
       .get("/event/?offset=5")
       .then((response) => setFeedItems(response.data))
       .catch((error) => console.log(error));
-  }, []);
+  }, [dialogOpen]);
 
   return (
     <div>
