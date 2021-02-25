@@ -315,3 +315,10 @@ fabric.properties
 # profiling data
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python,django
+/entrytask/.idea/.gitignore
+/entrytask/.idea/dataSources.xml
+/entrytask/.idea/entrytask.iml
+/entrytask/.idea/inspectionProfiles/profiles_settings.xml
+/entrytask/.idea/misc.xml
+/entrytask/.idea/modules.xml
+/entrytask/.idea/vcs.xml
