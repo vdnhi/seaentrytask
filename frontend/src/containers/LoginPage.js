@@ -25,7 +25,9 @@ function LoginPage(props) {
           .then(function (response) {
             AppToaster.show({ message: "Login successful", intent: "success" });
             const token = response.data["token"];
+            const userId = response.data["user_id"];
             window.sessionStorage.setItem("token", token);
+            window.sessionStorage.setItem("userId", userId);
             props.onChangeAuthState(true);
           })
           .catch(function (error) {
