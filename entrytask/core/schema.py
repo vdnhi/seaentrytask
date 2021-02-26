@@ -8,6 +8,15 @@ user_login_schema = {
     }
 }
 
+user_logout_schema = {
+    'type': 'object',
+    'required': ['user_id', 'token'],
+    'properties': {
+        'user_id': 'number',
+        'token': 'string'
+    }
+}
+
 user_register_schema = {
     'type': 'object',
     'required': ['username', 'password'],
@@ -21,7 +30,7 @@ user_register_schema = {
 
 event_schema = {
     'type': 'object',
-    'required': ['title', 'content', 'location', 'start_date', 'end_date'],
+    'required': ['title', 'content', 'location', 'start_date', 'end_date', 'create_uid', 'token'],
     'properties': {
         'title': {'type': 'string'},
         'content': {'type': 'string'},
@@ -29,7 +38,32 @@ event_schema = {
         'start_date': {'type': 'number'},
         'end_date': {'type': 'number'},
         'channels': {'type': 'array'},
-        'create_uid': {'type': 'number'}
+        'create_uid': {'type': 'number'},
+        'token': {'type': 'string'}
+    }
+}
+
+event_patch_schema = {
+    'type': 'object',
+    'required': ['create_uid', 'token'],
+    'properties': {
+        'title': {'type': 'string'},
+        'content': {'type': 'string'},
+        'location': {'type': 'string'},
+        'start_date': {'type': 'number'},
+        'end_date': {'type': 'number'},
+        'channels': {'type': 'array'},
+        'create_uid': {'type': 'number'},
+        'token': {'type': 'string'}
+    }
+}
+
+like_schema = {
+    'type': 'object',
+    'required': ['user_id', 'token'],
+    'properties': {
+        'user_id': {'type': 'number'},
+        'token': {'type': 'string'}
     }
 }
 
@@ -41,4 +75,13 @@ comment_schema = {
         'content': {'type': 'string'},
         'token': {'type': 'string'}
     }
+}
+
+participation_schema = {
+    'type': 'object',
+    'required': ['user_id', 'token'],
+    'properties': {
+        'user_id': {'type': 'number'},
+        'token': {'type': 'string'}
+    },
 }

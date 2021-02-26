@@ -4,7 +4,9 @@ import string
 from hashlib import md5
 import random
 from Crypto.Cipher import AES
+from django.core.cache import cache
 from django.db import DatabaseError
+from jsonschema import ValidationError
 
 from core.models import User, UserRoleMapping
 
@@ -62,3 +64,12 @@ def validate_user(username, password, input_role):
     except DatabaseError as exception:
         print(exception)
         return -1, -1, False
+
+
+def validate_token(token, user_id):
+    if cache.get(token) is None:
+        raise ValidationError('')
+    cached_data = cache.get(token)
+    print(user_id, cached_data['id'])
+    if user_id != cached_data['id']:
+        raise ValidationError('')
