@@ -1,4 +1,5 @@
 import { Button, Card, Position } from "@blueprintjs/core";
+import { FLEX_EXPANDER } from "@blueprintjs/core/lib/esm/common/classes";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
@@ -28,7 +29,7 @@ function FeedItem({ data }) {
       .catch((error) => {
         console.log(error);
       });
-  }, [countLike, isLiked]);
+  }, [isLiked]);
 
   const handleClickLikeButton = () => {
     if (!isLiked) {
@@ -62,6 +63,12 @@ function FeedItem({ data }) {
       <div>Start date: {startDate.toLocaleDateString()} </div>
       <div>End date: {endDate.toLocaleDateString()}</div>
       <div>Number of like: {countLike}</div>
+      <div style={{display: 'flex', justifyContent: 'space-around'}}>
+      {data.image_urls.map((image_url) => (
+        <img src={image_url} style={{ maxWidth: 200, maxHeight: 200 }}></img>
+      ))}
+
+      </div>
       <Button
         text={isLiked ? "Remove like" : "Like"}
         onClick={handleClickLikeButton}

@@ -65,7 +65,8 @@ function AddEventForm({ isOpen, toggleOpen }) {
         const eventId = response.data["id"];
         const formdata = new FormData();
 
-        formdata.append("image", images[0]);
+        // formdata.append("image", images);
+        images.forEach(image => formdata.append('image', image))
         formdata.append("user_id", userId);
         formdata.append("token", token);
 
@@ -79,6 +80,7 @@ function AddEventForm({ isOpen, toggleOpen }) {
             console.log(response);
             toggleOpen(false);
             clearInput();
+            AppToaster.show({message: 'Created an event!', intent: 'success', timeout: 1000})
           })
           .catch((error) => console.log(error));
       })
