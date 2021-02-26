@@ -7,16 +7,16 @@ from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
 
-from core.db_crud.channel import get_all_channels, get_event_channels, get_channel_id_by_name, insert_event_channel
+from core.db_crud.channel import get_all_channels, get_event_channels, insert_event_channel
 from core.db_crud.comment import get_event_comments, insert_comment
 from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event
 from core.db_crud.image import insert_image, insert_image_to_event, get_event_images
 from core.db_crud.like import insert_like, get_like_of_event, remove_like
 from core.db_crud.participation import get_participation_of_event, insert_participation, remove_participation
 from core.db_crud.user import get_user_by_id
-from core.schema import event_schema, comment_schema
+from core.schema import event_schema, comment_schema, event_patch_schema, like_schema, participation_schema
 from core.utils.response import json_response, error_response
-from entrytask import settings
+from core.utils.utils import validate_token
 
 
 class EventView(View):
@@ -47,6 +47,8 @@ class EventView(View):
         body_json = json.loads(self.request.body)
         try:
             validate(body_json, event_schema)
+            validate_token(body_json["token"], body_json["create_uid"])
+
             current_timestamp = int(time.time())
             body_json["create_time"] = current_timestamp
             body_json["update_time"] = current_timestamp
@@ -73,17 +75,28 @@ class SingleEventView(View):
     def patch(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
         body_json = json.loads(self.request.body)
-        event = update_event(event_id, body_json)
-        if event is None:
-            return error_response(500, 'update failed')
-        return json_response(event)
+        try:
+            validate(body_json, event_patch_schema)
+            validate_token(body_json['token'], body_json['create_uid'])
+            event = update_event(event_id, body_json)
+            if event is None:
+                return error_response(500, 'update failed')
+            return json_response(event)
+        except ValidationError:
+            return error_response(400, 'invalid input')
 
     def delete(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
-        row_affected = delete_event(event_id)
-        if row_affected is None or row_affected[0] == 0:
-            return error_response(500, 'delete failed')
-        return JsonResponse({'msg': 'deleted event {}'.format(event_id)})
+        user_id = self.request.GET.get('user_id')
+        token = self.request.GET.get('token')
+        try:
+            validate_token(token, user_id)
+            row_affected = delete_event(event_id)
+            if row_affected is None or row_affected[0] == 0:
+                return error_response(500, 'delete failed')
+            return JsonResponse({'msg': 'deleted event {}'.format(event_id)})
+        except ValidationError:
+            return error_response(401, '')
 
 
 class ChannelView(View):
@@ -118,30 +131,27 @@ class LikeEventView(View):
 
     def post(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
+        body_json = json.loads(self.request.body)
         try:
-            body_json = json.loads(self.request.body)
-            print(body_json)
-            validate(body_json, {
-                'type': 'object',
-                'properties': {
-                    'user_id': {'type': 'number'},
-                    'token': {'type': 'string'}
-                },
-                'required': ['user_id', 'token']
-            })
+            validate(body_json, like_schema)
+            validate_token(body_json['token'], body_json['user_id'])
             insert_like(event_id, body_json["user_id"])
             return json_response({'msg': 'liked'})
         except ValidationError:
-            return error_response(400, 'invalid input')
+            return error_response(401, 'invalid input')
 
     def delete(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
-        user_id = self.request.GET.get('user_id')
-        token = self.request.GET.get('token')
-        row_affected = remove_like(event_id, user_id)
-        if row_affected == 0:
-            return error_response(404, 'not found')
-        return json_response({'msg': 'deleted'})
+        try:
+            user_id = int(self.request.GET.get('user_id'))
+            token = self.request.GET.get('token')
+            validate_token(token, user_id)
+            row_affected = remove_like(event_id, user_id)
+            if row_affected == 0:
+                return error_response(404, 'not found')
+            return json_response({'msg': 'deleted'})
+        except ValidationError:
+            return error_response(401, '')
 
 
 class ParticipationEventView(View):
@@ -155,30 +165,27 @@ class ParticipationEventView(View):
 
     def post(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
+        body_json = json.loads(self.request.body)
         try:
-            body_json = json.loads(self.request.body)
-            print(body_json)
-            validate(body_json, {
-                'type': 'object',
-                'properties': {
-                    'user_id': {'type': 'number'},
-                    'token': {'type': 'string'}
-                },
-                'required': ['user_id', 'token']
-            })
+            validate(body_json, participation_schema)
+            validate_token(body_json['token'], body_json['user_id'])
             insert_participation(event_id, body_json["user_id"])
             return json_response({'msg': 'liked'})
         except ValidationError:
-            return error_response(400, 'invalid input')
+            return error_response(401, '')
 
     def delete(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
-        user_id = self.request.GET.get('user_id')
-        token = self.request.GET.get('token')
-        row_affected = remove_participation(event_id, user_id)
-        if row_affected == 0:
-            return error_response(404, 'not found')
-        return json_response({'msg': 'deleted'})
+        try:
+            user_id = self.request.GET.get('user_id')
+            token = self.request.GET.get('token')
+            validate_token(token, user_id)
+            row_affected = remove_participation(event_id, user_id)
+            if row_affected == 0:
+                return error_response(404, 'not found')
+            return json_response({'msg': 'deleted'})
+        except ValidationError:
+            return error_response(401, '')
 
 
 class CommentEventView(View):
@@ -195,6 +202,8 @@ class CommentEventView(View):
         body_json = json.loads(self.request.body)
         try:
             validate(body_json, comment_schema)
+            validate_token(body_json['token'], body_json['user_id'])
+
             timestamp = time.time()
             comment_data = {
                 'user_id': body_json['user_id'],
