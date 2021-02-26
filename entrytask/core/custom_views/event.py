@@ -2,6 +2,7 @@ import json
 import time
 
 from django.core.files.storage import default_storage
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import View
 from jsonschema import ValidationError
@@ -11,8 +12,9 @@ from core.db_crud.channel import get_all_channels, get_event_channels, insert_ev
 from core.db_crud.comment import get_event_comments, insert_comment
 from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event
 from core.db_crud.image import insert_image, insert_image_to_event, get_event_images
-from core.db_crud.like import insert_like, get_like_of_event, remove_like
-from core.db_crud.participation import get_participation_of_event, insert_participation, remove_participation
+from core.db_crud.like import insert_like, get_like_of_event, remove_like, get_event_like_count, is_user_liked_event
+from core.db_crud.participation import get_participation_of_event, insert_participation, remove_participation, \
+    get_event_participation_count, is_user_participated_event
 from core.db_crud.user import get_user_by_id
 from core.schema import event_schema, comment_schema, event_patch_schema, like_schema, participation_schema
 from core.utils.response import json_response, error_response
@@ -37,9 +39,25 @@ class EventView(View):
         if events is None or len(events) == 0:
             return error_response(404, 'have no event')
 
+        is_logged_user = False
+        user_id = int(self.request.GET.get('user_id', None))
+        token = self.request.GET.get('token', None)
+        if user_id is not None and token is not None:
+            try:
+                validate_token(token, user_id)
+                is_logged_user = True
+            except ValidationError:
+                pass
+
+        print(is_logged_user)
         for event in events:
             event['channels'] = get_event_channels(event.get('id'))
             event['image_urls'] = get_event_images(event.get('id'))
+            event['count_like'] = get_event_like_count(event.get('id'))
+            event['count_participation'] = get_event_participation_count(event.get('id'))
+            if is_logged_user:
+                event['has_liked'] = is_user_liked_event(user_id, event.get('id'))
+                event['has_participated'] = is_user_participated_event(user_id, event.get('id'))
 
         return JsonResponse(events, safe=False)
 
@@ -70,6 +88,23 @@ class SingleEventView(View):
         event = get_event_by_id(event_id)
         if event is None:
             return error_response(404, 'have no event with id {}'.format(event_id))
+
+        event = model_to_dict(event)
+
+        event['count_like'] = get_event_like_count(event_id)
+        event['count_participation'] = get_event_participation_count(event_id)
+
+        user_id = int(self.request.GET.get('user_id', None))
+        token = self.request.GET.get('token', None)
+
+        if user_id is not None and token is not None:
+            try:
+                validate_token(token, user_id)
+                event['has_liked'] = is_user_liked_event(user_id, event.get('id'))
+                event['has_participated'] = is_user_participated_event(user_id, event.get('id'))
+            except ValidationError:
+                pass
+
         return json_response(event)
 
     def patch(self, *args, **kwargs):

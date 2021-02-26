@@ -11,6 +11,14 @@ def get_participation_of_event(event_id):
     return list_participant
 
 
+def get_event_participation_count(event_id):
+    return Participation.objects.filter(event_id=event_id).count()
+
+
 def remove_participation(event_id, user_id):
     row_affected = Participation.objects.filter(event_id=event_id, user_id=user_id).delete()
     return row_affected
+
+
+def is_user_participated_event(user_id, event_id):
+    return Participation.objects.filter(user_id=user_id, event_id=event_id).count() > 0
