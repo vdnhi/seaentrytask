@@ -70,6 +70,6 @@ def validate_token(token, user_id):
     if cache.get(token) is None:
         raise ValidationError('')
     cached_data = cache.get(token)
-    print(user_id, cached_data['id'])
+
     if user_id != cached_data['id']:
         raise ValidationError('')

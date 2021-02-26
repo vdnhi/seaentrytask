@@ -9,8 +9,10 @@ function EventFeed() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
+    const userId = window.sessionStorage.getItem('userId');
+    const token = window.sessionStorage.getItem('token');
     axios
-      .get("/event/?offset=5")
+      .get(`/event/?offset=5&user_id=${userId}&token=${token}`)
       .then((response) => setFeedItems(response.data))
       .catch((error) => console.log(error));
   }, [dialogOpen]);
