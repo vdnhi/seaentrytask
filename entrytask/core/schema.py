@@ -32,3 +32,13 @@ event_schema = {
         'create_uid': {'type': 'number'}
     }
 }
+
+comment_schema = {
+    'type': 'object',
+    'required': ['user_id', 'content', 'token'],
+    'properties': {
+        'user_id': {'type': 'number'},
+        'content': {'type': 'string'},
+        'token': {'type': 'string'}
+    }
+}

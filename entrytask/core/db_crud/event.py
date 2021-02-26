@@ -24,7 +24,7 @@ def insert_event(event_data):
 
 def get_events(conditions, base, offset):
     try:
-        events = list(Event.objects.filter(**conditions).order_by('create_time'))[base:base + offset]
+        events = list(Event.objects.filter(**conditions).order_by('-create_time', '-id'))[base:base + offset]
         events = [model_to_dict(event) for event in events]
         return events
     except ObjectDoesNotExist:
