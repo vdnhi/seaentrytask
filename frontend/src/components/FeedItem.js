@@ -1,10 +1,10 @@
-import { Button, Card, Position } from "@blueprintjs/core";
+import { Button, Card, Position, Tag } from "@blueprintjs/core";
 import { FLEX_EXPANDER } from "@blueprintjs/core/lib/esm/common/classes";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
 function FeedItem({ data }) {
-  const [countLike, setCountLike] = useState(0);
+  const [countLike, setCountLike] = useState();
   const [isLiked, setIsLiked] = useState(false);
   const startDate = new Date(data.start_date * 1000);
   const endDate = new Date(data.end_date * 1000);
@@ -56,18 +56,27 @@ function FeedItem({ data }) {
   };
 
   return (
-    <Card>
-      <div>Title: {data.title}</div>
-      <div>Content: {data.content}</div>
-      <div>Location: {data.location}</div>
+    <Card style={{ marginTop: "20px", marginRight: "20px" }}>
+      <h3>{data.title}</h3>
+      <div>
+        {data.channels.map((channel) => (
+          <Tag intent="primary" style={{ marginRight: 10 }}>
+            {channel.name}
+          </Tag>
+        ))}
+      </div>
+      <div style={{marginTop: 20}}>Description:</div>
+      <div>{data.content}</div>
+      <div>
+        <b>Location</b>: {data.location}
+      </div>
       <div>Start date: {startDate.toLocaleDateString()} </div>
       <div>End date: {endDate.toLocaleDateString()}</div>
       <div>Number of like: {countLike}</div>
-      <div style={{display: 'flex', justifyContent: 'space-around'}}>
-      {data.image_urls.map((image_url) => (
-        <img src={image_url} style={{ maxWidth: 200, maxHeight: 200 }}></img>
-      ))}
-
+      <div style={{ display: "flex", justifyContent: "space-around" }}>
+        {data.image_urls.map((image_url) => (
+          <img src={image_url} style={{ maxWidth: 200, maxHeight: 200 }}></img>
+        ))}
       </div>
       <Button
         text={isLiked ? "Remove like" : "Like"}

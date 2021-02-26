@@ -64,8 +64,12 @@ class UserLoginView(View):
             encrypted_password = body_json.get('password')
             role = int(body_json.get('role'))
 
+            if cache.get('{}_key'.format(username)) is None:
+                return error_response(400, 'Username does not exist or wrong password')
+
             user_key = cache.get('{}_key'.format(username))
             cache.delete('{}_key'.format(username))
+
             password = decrypt(encrypted_password, user_key)
             user, role, is_valid = validate_user(username, password, role)
 
@@ -90,4 +94,3 @@ class UserLogoutView(View):
             return error_response(400, '')
         except ValidationError:
             return error_response(400, 'invalid input')
-

@@ -5,29 +5,25 @@ import bcrypt
 from django.core.management import BaseCommand
 
 from core.db_crud.channel import insert_channel
+from core.db_crud.comment import insert_comment
 from core.db_crud.event import insert_event
+from core.db_crud.image import insert_image, insert_image_to_event
 from core.db_crud.role import insert_role, insert_user_role
 from core.db_crud.user import insert_user
 from core.models import Event, Role, User, UserRoleMapping
 from core.utils.utils import hasher
 
-MODE_REFRESH = 'refresh'
-MODE_CLEAR = 'clear'
-
 
 class Command(BaseCommand):
     help = "seed database for testing and development"
 
-    def add_arguments(self, parser):
-        parser.add_argument('--mode', type=str, help="Mode")
-
     def handle(self, *args, **options):
-        self.stdout.write('seeding data...')
-        run_seed(self, options['mode'])
-        self.stdout.write('seed done.')
+        self.stdout.write('Seeding data...')
+        run_seed(self)
+        self.stdout.write('Seed done.')
 
 
-def generate_random_events(limit):
+def generate_events(limit):
     print('Generating random events...')
     time_delta = 1000
     count_failed = 0
@@ -54,7 +50,7 @@ def generate_roles():
     insert_role('admin')
 
 
-def generate_random_users(limit):
+def generate_users(limit):
     print('Generating random users...')
     count_failed = 0
     for i in range(limit):
@@ -82,28 +78,51 @@ def generate_user_role_mapping(limit):
     print('{} user role mapping were generated, failed {}'.format(limit - count_failed, count_failed))
 
 
-def generate_channels():
+def generate_channels(limit):
     print('Generating channel...')
-    for i in range(10):
-        insert_channel('Channel {}'.format(i))
-    print('Channel generation done!')
+    count_failed = 0
+    for i in range(limit):
+        channel = insert_channel('Channel {}'.format(i))
+        if channel is None:
+            count_failed += 1
+    print('Channel generation done with failed = {}'.format(count_failed))
 
 
-def clear_data():
-    Event.objects.all().delete()
-    Role.objects.all().delete()
-    User.objects.all().delete()
-    UserRoleMapping.objects.all().delete()
+def generate_images(limit):
+    print('Generating images...')
+    count_failed = 0
+    for i in range(limit):
+        image_id = insert_image("/media/foody_vVhdaLV.jpeg")
+        mapping = insert_image_to_event(i, image_id)
+        if mapping is None:
+            count_failed += 1
+    print('Images generation done with failed = {}'.format(count_failed))
 
 
-def run_seed(self, mode):
-    clear_data()
-    if mode == MODE_CLEAR:
-        return
+def generate_comments(limit):
+    print('Generating comments...')
+    count_failed = 0
+    for i in range(limit):
+        timestamp = time.time()
+        comment_data = {
+            'user_id': i,
+            'event_id': i,
+            'content': 'Content {}'.format(i),
+            'create_time': timestamp,
+            'update_time': timestamp
+        }
+        comment_id = insert_comment(comment_data)
+        if comment_id is None:
+            count_failed += 1
+    print('Comments generation done with failed = {}'.format(count_failed))
 
-    limit = 100
-    generate_random_events(limit)
+
+def run_seed(self):
+    limit = 1000000
+    generate_events(limit)
     generate_roles()
-    generate_random_users(limit)
+    generate_users(limit)
     generate_user_role_mapping(limit)
-    generate_channels()
+    generate_channels(limit)
+    generate_images(limit)
+    generate_comments(limit)
