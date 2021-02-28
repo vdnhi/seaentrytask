@@ -10,8 +10,8 @@ def get_event_like_count(event_id):
     return Like.objects.filter(event_id=event_id).count()
 
 
-def get_like_of_event(event_id):
-    likes = list(Like.objects.filter(event_id=event_id))
+def get_like_of_event(event_id, base, offset):
+    likes = list(Like.objects.filter(event_id=event_id)[base:base + offset])
     return likes
 
 

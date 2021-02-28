@@ -49,7 +49,6 @@ class EventView(View):
             except ValidationError:
                 pass
 
-        print(is_logged_user)
         for event in events:
             event['channels'] = get_event_channels(event.get('id'))
             event['image_urls'] = get_event_images(event.get('id'))
@@ -158,10 +157,14 @@ class UploadImageView(View):
 class LikeEventView(View):
     def get(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
-        likes = get_like_of_event(event_id)
+        base = int(self.request.GET.get('base', 0))
+        offset = int(self.request.GET.get('offset', 10))
+
+        likes = get_like_of_event(event_id, base, offset)
         users_id = [like.user_id for like in likes]
         user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
         user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
+
         return JsonResponse(user_data, safe=False)
 
     def post(self, *args, **kwargs):
@@ -192,7 +195,10 @@ class LikeEventView(View):
 class ParticipationEventView(View):
     def get(self, *args, **kwargs):
         event_id = int(self.kwargs.get('event_id'))
-        list_participant = get_participation_of_event(event_id)
+        base = int(self.request.GET.get('base', 0))
+        offset = int(self.request.GET.get('offset', 10))
+
+        list_participant = get_participation_of_event(event_id, base, offset)
         users_id = [participant.user_id for participant in list_participant]
         user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
         user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
