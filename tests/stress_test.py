@@ -43,8 +43,7 @@ def main():
     prelogin_fail = 0
     login_fail = 0
     count_ok = 0
-    for index in range(100):
-        # print('Doing with user {}'.format(index))
+    for index in range(500):
         username = 'user{}'.format(index)
         response = requests.post('http://{}/user/prelogin/'.format(HOST),
                 json={'username': username})
@@ -53,8 +52,7 @@ def main():
             data = response.json()
             password = encrypt(username, data['key'].encode('utf-8'))
             response = requests.post('http://{}/user/login/'.format(HOST),
-                    json={'username': username, 'password': password, 'role':
-                        1 + (index % 2)})
+                    json={'username': username, 'password': password, 'role': 1})
             if response.status_code == 200:
                 count_ok += 1
             else:

@@ -6,8 +6,8 @@ def insert_participation(event_id, user_id):
     return participation
 
 
-def get_participation_of_event(event_id):
-    list_participant = list(Participation.objects.filter(event_id=event_id))
+def get_participation_of_event(event_id, base, offset):
+    list_participant = list(Participation.objects.filter(event_id=event_id)[base:base + offset])
     return list_participant
 
 
