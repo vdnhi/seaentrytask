@@ -6,171 +6,170 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+	initial = True
 
-    initial = True
+	dependencies = [
+	]
 
-    dependencies = [
-    ]
-
-    operations = [
-        migrations.CreateModel(
-            name='Channel',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100)),
-            ],
-            options={
-                'db_table': 'channel_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Comment',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('user_id', models.BigIntegerField()),
-                ('event_id', models.BigIntegerField()),
-                ('content', models.CharField(max_length=255)),
-                ('create_time', models.PositiveIntegerField()),
-                ('update_time', models.PositiveIntegerField()),
-            ],
-            options={
-                'db_table': 'comment_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Event',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=100)),
-                ('content', models.CharField(max_length=1000)),
-                ('start_date', models.PositiveIntegerField()),
-                ('end_date', models.PositiveIntegerField()),
-                ('create_uid', models.BigIntegerField()),
-                ('create_time', models.PositiveIntegerField()),
-                ('update_time', models.PositiveIntegerField()),
-                ('location', models.CharField(max_length=100, null=True)),
-            ],
-            options={
-                'ordering': ['id'],
-                'db_table': 'event_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='EventChannelMapping',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('channel_id', models.BigIntegerField()),
-                ('event_id', models.BigIntegerField()),
-            ],
-            options={
-                'db_table': 'event_channel_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='EventImageMapping',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('image_id', models.BigIntegerField()),
-                ('event_id', models.BigIntegerField()),
-            ],
-            options={
-                'db_table': 'event_image_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Image',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('image_url', models.CharField(max_length=255)),
-            ],
-            options={
-                'db_table': 'image_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Like',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('user_id', models.BigIntegerField()),
-                ('event_id', models.BigIntegerField()),
-            ],
-            options={
-                'db_table': 'like_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Participation',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('user_id', models.BigIntegerField()),
-                ('event_id', models.BigIntegerField()),
-                ('create_time', models.PositiveIntegerField()),
-            ],
-            options={
-                'db_table': 'participation_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='Role',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('rolename', models.CharField(max_length=30, unique=True)),
-            ],
-            options={
-                'db_table': 'role_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='User',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('username', models.CharField(max_length=50, unique=True)),
-                ('fullname', models.CharField(max_length=100)),
-                ('email', models.EmailField(max_length=70)),
-                ('salt', models.CharField(max_length=60)),
-                ('salted_password', models.CharField(max_length=120)),
-            ],
-            options={
-                'db_table': 'user_tab',
-            },
-        ),
-        migrations.CreateModel(
-            name='UserRoleMapping',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('user_id', models.BigIntegerField()),
-                ('role_id', models.BigIntegerField()),
-            ],
-            options={
-                'db_table': 'user_role_tab',
-            },
-        ),
-        migrations.AddIndex(
-            model_name='userrolemapping',
-            index=models.Index(fields=['user_id'], name='user_role_t_user_id_825ffd_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='participation',
-            index=models.Index(fields=['event_id'], name='participati_event_i_00929f_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='like',
-            index=models.Index(fields=['event_id'], name='like_tab_event_i_60e563_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='eventimagemapping',
-            index=models.Index(fields=['event_id'], name='event_image_event_i_ae6341_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='eventchannelmapping',
-            index=models.Index(fields=['event_id'], name='event_chann_event_i_0c17af_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='event',
-            index=models.Index(fields=['create_time'], name='event_tab_create__3b8c78_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='comment',
-            index=models.Index(fields=['event_id'], name='comment_tab_event_i_9c8d54_idx'),
-        ),
-    ]
+	operations = [
+		migrations.CreateModel(
+			name='Channel',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('name', models.CharField(max_length=100)),
+			],
+			options={
+				'db_table': 'channel_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Comment',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('user_id', models.BigIntegerField()),
+				('event_id', models.BigIntegerField()),
+				('content', models.CharField(max_length=255)),
+				('create_time', models.PositiveIntegerField()),
+				('update_time', models.PositiveIntegerField()),
+			],
+			options={
+				'db_table': 'comment_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Event',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('title', models.CharField(max_length=100)),
+				('content', models.CharField(max_length=1000)),
+				('start_date', models.PositiveIntegerField()),
+				('end_date', models.PositiveIntegerField()),
+				('create_uid', models.BigIntegerField()),
+				('create_time', models.PositiveIntegerField()),
+				('update_time', models.PositiveIntegerField()),
+				('location', models.CharField(max_length=100, null=True)),
+			],
+			options={
+				'ordering': ['id'],
+				'db_table': 'event_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='EventChannelMapping',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('channel_id', models.BigIntegerField()),
+				('event_id', models.BigIntegerField()),
+			],
+			options={
+				'db_table': 'event_channel_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='EventImageMapping',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('image_id', models.BigIntegerField()),
+				('event_id', models.BigIntegerField()),
+			],
+			options={
+				'db_table': 'event_image_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Image',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('image_url', models.CharField(max_length=255)),
+			],
+			options={
+				'db_table': 'image_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Like',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('user_id', models.BigIntegerField()),
+				('event_id', models.BigIntegerField()),
+			],
+			options={
+				'db_table': 'like_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Participation',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('user_id', models.BigIntegerField()),
+				('event_id', models.BigIntegerField()),
+				('create_time', models.PositiveIntegerField()),
+			],
+			options={
+				'db_table': 'participation_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='Role',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('rolename', models.CharField(max_length=30, unique=True)),
+			],
+			options={
+				'db_table': 'role_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='User',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('username', models.CharField(max_length=50, unique=True)),
+				('fullname', models.CharField(max_length=100)),
+				('email', models.EmailField(max_length=70)),
+				('salt', models.CharField(max_length=60)),
+				('salted_password', models.CharField(max_length=120)),
+			],
+			options={
+				'db_table': 'user_tab',
+			},
+		),
+		migrations.CreateModel(
+			name='UserRoleMapping',
+			fields=[
+				('id', models.BigAutoField(primary_key=True, serialize=False)),
+				('user_id', models.BigIntegerField()),
+				('role_id', models.BigIntegerField()),
+			],
+			options={
+				'db_table': 'user_role_tab',
+			},
+		),
+		migrations.AddIndex(
+			model_name='userrolemapping',
+			index=models.Index(fields=['user_id'], name='user_role_t_user_id_825ffd_idx'),
+		),
+		migrations.AddIndex(
+			model_name='participation',
+			index=models.Index(fields=['event_id'], name='participati_event_i_00929f_idx'),
+		),
+		migrations.AddIndex(
+			model_name='like',
+			index=models.Index(fields=['event_id'], name='like_tab_event_i_60e563_idx'),
+		),
+		migrations.AddIndex(
+			model_name='eventimagemapping',
+			index=models.Index(fields=['event_id'], name='event_image_event_i_ae6341_idx'),
+		),
+		migrations.AddIndex(
+			model_name='eventchannelmapping',
+			index=models.Index(fields=['event_id'], name='event_chann_event_i_0c17af_idx'),
+		),
+		migrations.AddIndex(
+			model_name='event',
+			index=models.Index(fields=['create_time'], name='event_tab_create__3b8c78_idx'),
+		),
+		migrations.AddIndex(
+			model_name='comment',
+			index=models.Index(fields=['event_id'], name='comment_tab_event_i_9c8d54_idx'),
+		),
+	]
