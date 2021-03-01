@@ -36,7 +36,7 @@ def encrypt(message, passphrase):
     return base64.b64encode(b"Salted__" + salt + aes.encrypt(pad(message)))
 
 
-HOST = '172.16.230.130'
+HOST = '127.0.0.1:8000'
 
 def main():
     start_time = time.time()
