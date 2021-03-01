@@ -40,10 +40,12 @@ class EventView(View):
             return error_response(404, 'have no event')
 
         is_logged_user = False
-        user_id = int(self.request.GET.get('user_id', None))
+        user_id = self.request.GET.get('user_id', None)
         token = self.request.GET.get('token', None)
+
         if user_id is not None and token is not None:
             try:
+                user_id = int(user_id)
                 validate_token(token, user_id)
                 is_logged_user = True
             except ValidationError:
@@ -93,11 +95,12 @@ class SingleEventView(View):
         event['count_like'] = get_event_like_count(event_id)
         event['count_participation'] = get_event_participation_count(event_id)
 
-        user_id = int(self.request.GET.get('user_id', None))
+        user_id = self.request.GET.get('user_id', None)
         token = self.request.GET.get('token', None)
 
         if user_id is not None and token is not None:
             try:
+                user_id = int(user_id)
                 validate_token(token, user_id)
                 event['has_liked'] = is_user_liked_event(user_id, event.get('id'))
                 event['has_participated'] = is_user_participated_event(user_id, event.get('id'))
