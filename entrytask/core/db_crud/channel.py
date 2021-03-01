@@ -11,8 +11,8 @@ def insert_event_channel(event_id, channel_id):
     return created
 
 
-def get_all_channels():
-    channels = list(Channel.objects.all())
+def get_channels(base, offset):
+    channels = list(Channel.objects.all()[base:base + offset])
     channels = [{'id': channel.id, 'name': channel.name} for channel in channels]
     return channels
 

@@ -8,7 +8,7 @@ from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
 
-from core.db_crud.channel import get_all_channels, get_event_channels, insert_event_channel
+from core.db_crud.channel import get_channels, get_event_channels, insert_event_channel
 from core.db_crud.comment import get_event_comments, insert_comment
 from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event
 from core.db_crud.image import insert_image, insert_image_to_event, get_event_images
@@ -138,7 +138,9 @@ class SingleEventView(View):
 
 class ChannelView(View):
     def get(self, *args, **kwargs):
-        channels = get_all_channels()
+        base = int(self.request.GET.get('base', 0))
+        offset = int(self.request.GET.get('offset', 10))
+        channels = get_channels(base, offset)
         return JsonResponse(channels, safe=False)
 
 
