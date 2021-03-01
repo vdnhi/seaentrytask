@@ -25,6 +25,7 @@ def get_channel_id_by_name(channel_name):
 
 
 def get_channel_name_by_id(channel_id):
+    print(channel_id)
     channel = list(Channel.objects.filter(id=channel_id))
     if len(channel) == 0:
         return None
@@ -33,5 +34,5 @@ def get_channel_name_by_id(channel_id):
 
 def get_event_channels(event_id):
     channels = EventChannelMapping.objects.filter(event_id=event_id)
-    channel_name = [{'id': channel.id, 'name': get_channel_name_by_id(channel.id)} for channel in channels]
+    channel_name = [{'id': channel.id, 'name': get_channel_name_by_id(channel.channel_id)} for channel in channels]
     return channel_name
