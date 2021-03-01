@@ -37,7 +37,16 @@ event_schema = {
         'location': {'type': 'string'},
         'start_date': {'type': 'number'},
         'end_date': {'type': 'number'},
-        'channels': {'type': 'array'},
+        'channels': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'number'},
+                    'name': {'type': 'string'}
+                }
+            }
+        },
         'create_uid': {'type': 'number'},
         'token': {'type': 'string'}
     }
@@ -52,7 +61,16 @@ event_patch_schema = {
         'location': {'type': 'string'},
         'start_date': {'type': 'number'},
         'end_date': {'type': 'number'},
-        'channels': {'type': 'array'},
+        'channels': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'number'},
+                    'name': {'type': 'string'}
+                }
+            }
+        },
         'create_uid': {'type': 'number'},
         'token': {'type': 'string'}
     }
