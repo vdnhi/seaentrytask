@@ -1,4 +1,4 @@
-from core.models import Image, EventImageMapping
+from commonlib.models import Image, EventImageMapping
 
 
 def insert_image(image_url):

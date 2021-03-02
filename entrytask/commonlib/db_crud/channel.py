@@ -1,4 +1,4 @@
-from core.models import Channel, EventChannelMapping
+from commonlib.models import Channel, EventChannelMapping
 
 
 def insert_channel(name):

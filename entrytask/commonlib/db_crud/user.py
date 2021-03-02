@@ -1,4 +1,4 @@
-from core.models import User
+from commonlib.models import User
 
 
 def insert_user(user_info):

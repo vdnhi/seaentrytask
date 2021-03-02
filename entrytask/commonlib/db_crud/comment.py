@@ -1,6 +1,6 @@
 from django.forms.models import model_to_dict
 
-from core.models import Comment
+from commonlib.models import Comment
 
 
 def get_event_comments(event_id, base, offset):
