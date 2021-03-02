@@ -4,6 +4,7 @@ from django.core.cache import cache
 from jsonschema import ValidationError
 
 from core.utils.http_status_code import HttpStatus
+from core.utils.logger import log
 from core.utils.response import error_response
 
 

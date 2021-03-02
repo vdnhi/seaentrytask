@@ -36,14 +36,14 @@ def encrypt(message, passphrase):
     return base64.b64encode(b"Salted__" + salt + aes.encrypt(pad(message)))
 
 
-HOST = '127.0.0.1:8000'
+HOST = '172.16.230.130'
 
 def main():
     start_time = time.time()
     prelogin_fail = 0
     login_fail = 0
     count_ok = 0
-    for index in range(500):
+    for index in range(1):
         username = 'user{}'.format(index)
         response = requests.post('http://{}/user/prelogin/'.format(HOST),
                 json={'username': username})

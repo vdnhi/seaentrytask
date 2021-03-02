@@ -4,6 +4,7 @@ cffi==1.14.5
 configparser==4.0.2
 contextlib2==0.6.0.post1
 Django==1.11.29
+enum==0.4.7
 functools32==3.2.3.post2
 importlib-metadata==2.1.1
 ipaddress==1.0.23

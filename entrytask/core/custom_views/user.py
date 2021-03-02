@@ -53,12 +53,21 @@ class UserPreloginView(View):
 	def post(self, *args, **kwargs):
 		body_json = json.loads(self.request.body)
 		username = body_json.get('username')
-		user = get_user_by_username(username)
+		if cache.get('{}_userinfo'.format(username)) is None:
+			user = model_to_dict(get_user_by_username(username))
+		else:
+			user = cache.get('{}_userinfo'.format(username))
+
 		if user is None:
 			error_response(HttpStatus.BadRequest, 'Username does not exist or wrong password')
-		random_key = string_generator(RANDOM_KEY_LENGTH)
+
+		if cache.get('{}_key'.format(username)) is None:
+			random_key = string_generator(RANDOM_KEY_LENGTH)
+		else:
+			random_key = cache.get('{}_key'.format(username))
+
 		cache.set('{}_key'.format(username), random_key, LOGIN_CACHE_TIMEOUT)
-		cache.set('{}_userinfo'.format(username), model_to_dict(user), LOGIN_CACHE_TIMEOUT)
+		cache.set('{}_userinfo'.format(username), user, LOGIN_CACHE_TIMEOUT)
 		return json_response({'key': random_key})
 
 
