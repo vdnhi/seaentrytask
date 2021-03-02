@@ -44,7 +44,7 @@ class EventView(View):
 			events = get_events(filtered_conditions, base, offset)
 
 		if events is None or len(events) == 0:
-			return error_response(HttpStatus.NotFound, 'have no event')
+			return json_response([])
 
 		is_logged_user = False
 		user_id = self.request.GET.get('user_id', None)
@@ -66,7 +66,7 @@ class EventView(View):
 				event['has_liked'] = is_user_liked_event(user_id, event.get('id'))
 				event['has_participated'] = is_user_participated_event(user_id, event.get('id'))
 
-		return JsonResponse(events, safe=False)
+		return json_response(events)
 
 	@error_handler
 	def post(self, *args, **kwargs):
@@ -96,7 +96,7 @@ class SingleEventView(View):
 		event_id = int(self.kwargs.get('event_id'))
 		event = get_event_by_id(event_id)
 		if event is None:
-			return error_response(HttpStatus.NotFound, 'have no event with id {}'.format(event_id))
+			return json_response({})
 
 		event = model_to_dict(event)
 
@@ -133,7 +133,7 @@ class SingleEventView(View):
 	@error_handler
 	def delete(self, *args, **kwargs):
 		event_id = int(self.kwargs.get('event_id'))
-		user_id = self.request.GET.get('user_id')
+		user_id = int(self.request.GET.get('user_id'))
 		token = self.request.GET.get('token')
 		role = int(self.request.GET.get('role', 0))
 		try:
@@ -141,7 +141,7 @@ class SingleEventView(View):
 			row_affected = delete_event(event_id)
 			if row_affected is None or row_affected[0] == 0:
 				return error_response(HttpStatus.InternalServerError, 'delete failed')
-			return JsonResponse({'msg': 'deleted event {}'.format(event_id)})
+			return json_response({'msg': 'deleted event {}'.format(event_id)})
 		except ValidationError:
 			return error_response(HttpStatus.Unauthorized, '')
 
@@ -183,7 +183,7 @@ class LikeEventView(View):
 		user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
 		user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
 
-		return JsonResponse(user_data, safe=False)
+		return json_response(user_data)
 
 	@error_handler
 	def post(self, *args, **kwargs):
@@ -224,7 +224,8 @@ class ParticipationEventView(View):
 		users_id = [participant.user_id for participant in list_participant]
 		user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
 		user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
-		return JsonResponse(user_data, safe=False)
+
+		return json_response(user_data)
 
 	@error_handler
 	def post(self, *args, **kwargs):
@@ -234,7 +235,7 @@ class ParticipationEventView(View):
 			validate(body_json, participation_schema)
 			validate_token_func(body_json['token'], body_json['user_id'])
 			insert_participation(event_id, body_json['user_id'])
-			return json_response({'msg': 'liked'})
+			return json_response({'msg': 'participated'})
 		except ValidationError:
 			return error_response(HttpStatus.Unauthorized, '')
 
