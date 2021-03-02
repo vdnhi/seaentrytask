@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 
-from core.db_crud.channel import get_channel_id_by_name
-from core.models import Event, EventChannelMapping
+from commonlib.db_crud.channel import get_channel_id_by_name
+from commonlib.models import Event, EventChannelMapping
 
 
 def insert_event(event_data):

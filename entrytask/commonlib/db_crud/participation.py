@@ -1,11 +1,11 @@
 import time
 
-from core.models import Participation
+from commonlib.models import Participation
 
 
 def insert_participation(event_id, user_id):
 	timestamp = time.time()
-	participation = Participation.objects.create(event_id=event_id, user_id=user_id, create_time=timestamp)
+	participation = Participation.objects.get_or_create(event_id=event_id, user_id=user_id, create_time=timestamp)
 	return participation
 
 

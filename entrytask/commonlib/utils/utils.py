@@ -9,7 +9,7 @@ from django.core.cache import cache
 from django.db import DatabaseError
 from jsonschema import ValidationError
 
-from core.models import UserRoleMapping
+from commonlib.models import UserRoleMapping
 
 BLOCK_SIZE = 16
 

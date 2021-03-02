@@ -7,16 +7,11 @@ from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
 
-from core.custom_views.schema import user_login_schema, user_register_schema, user_logout_schema
-from core.db_crud.user import insert_user, get_user_by_id, get_user_by_username
-from core.utils.http_status_code import HttpStatus
-from core.utils.response import error_response, json_response
-from core.utils.utils import string_generator, decrypt, hasher, validate_user, validate_token_func
-
-LOGIN_CACHE_TIMEOUT = 60
-SESSION_TIMEOUT = 3600
-TOKEN_LENGTH = 64
-RANDOM_KEY_LENGTH = 32
+from commonlib.constant import HttpStatus
+from commonlib.db_crud.user import insert_user, get_user_by_id, get_user_by_username
+from commonlib.schema import user_login_schema, user_register_schema, user_logout_schema
+from commonlib.utils.response import error_response, json_response
+from commonlib.utils.utils import string_generator, decrypt, hasher, validate_user, validate_token_func
 
 
 class UserView(View):

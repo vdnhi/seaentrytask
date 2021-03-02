@@ -4,11 +4,11 @@ import time
 import bcrypt
 from django.core.management import BaseCommand
 
-from core.db_crud.role import insert_role, insert_user_role
-from core.db_crud.user import insert_user
-from core.models import Event, User, UserRoleMapping, Channel, Image, Comment, Role, EventChannelMapping, Like, \
+from commonlib.db_crud import insert_role, insert_user_role
+from commonlib.db_crud.user import insert_user
+from commonlib.models import Event, User, UserRoleMapping, Channel, Image, Comment, Role, EventChannelMapping, Like, \
     Participation, EventImageMapping
-from core.utils.utils import hasher
+from commonlib.utils.utils import hasher
 
 NUM_ADMIN = 10
 BATCH_SIZE = 10000

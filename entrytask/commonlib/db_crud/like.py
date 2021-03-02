@@ -1,4 +1,4 @@
-from core.models import Like
+from commonlib.models import Like
 
 
 def insert_like(event_id, user_id):

@@ -17,7 +17,8 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 from django.views.static import serve
 
-from core.custom_views import event, user
+from admin.views import event
+from api.views import user
 from entrytask import settings
 
 urlpatterns = [

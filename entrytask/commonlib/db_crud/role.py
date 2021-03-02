@@ -1,4 +1,4 @@
-from core.models import Role, UserRoleMapping
+from commonlib.models import Role, UserRoleMapping
 
 
 def insert_role(rolename):

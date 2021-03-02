@@ -8,20 +8,21 @@ from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
 
-from core.custom_views.schema import event_schema, comment_schema, event_patch_schema, like_schema, participation_schema
-from core.db_crud.channel import get_channels, get_event_channels, insert_event_channel
-from core.db_crud.comment import get_event_comments, insert_comment
-from core.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event, \
+from commonlib.db_crud.channel import get_channels, get_event_channels, insert_event_channel
+from commonlib.db_crud.comment import get_event_comments, insert_comment
+from commonlib.db_crud.event import get_events, get_event_by_id, insert_event, update_event, delete_event, \
 	get_events_with_channels
-from core.db_crud.image import insert_image, insert_image_to_event, get_event_images
-from core.db_crud.like import insert_like, get_like_of_event, remove_like, get_event_like_count, is_user_liked_event
-from core.db_crud.participation import get_participation_of_event, insert_participation, remove_participation, \
+from commonlib.db_crud.image import insert_image, insert_image_to_event, get_event_images
+from commonlib.db_crud.like import insert_like, get_like_of_event, remove_like, get_event_like_count, \
+	is_user_liked_event
+from commonlib.db_crud.participation import get_participation_of_event, insert_participation, remove_participation, \
 	get_event_participation_count, is_user_participated_event
-from core.db_crud.user import get_user_by_id
-from core.utils.decorator import error_handler
-from core.utils.http_status_code import HttpStatus
-from core.utils.response import json_response, error_response
-from core.utils.utils import validate_token_func
+from commonlib.db_crud.user import get_user_by_id
+from commonlib.schema import event_schema, comment_schema, event_patch_schema, like_schema, participation_schema
+from commonlib.utils.decorator import error_handler
+from commonlib.constant import HttpStatus
+from commonlib.utils.response import json_response, error_response
+from commonlib.utils.utils import validate_token_func
 
 
 class EventView(View):
