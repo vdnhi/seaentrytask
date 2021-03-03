@@ -9,7 +9,7 @@ from django.core.cache import cache
 from django.db import DatabaseError
 from jsonschema import ValidationError
 
-from commonlib.models import UserRoleMapping
+from commonlib.utils.logger import log
 
 BLOCK_SIZE = 16
 
@@ -57,13 +57,12 @@ def hasher(password, salt):
 	return hashlib.sha256(password + salt).hexdigest()
 
 
-def validate_user(username, password, input_role):
+def validate_user(username, password):
 	try:
 		user = cache.get('{}_userinfo'.format(username))
-		role = UserRoleMapping.objects.filter(user_id=user['id']).first()
-		return user, role.role_id, user['salted_password'] == hasher(password, user['salt']) and input_role == role.role_id
+		return user, user['salted_password'] == hasher(password, user['salt'])
 	except DatabaseError as exception:
-		print(exception)
+		log.error(exception)
 		return -1, -1, False
 
 

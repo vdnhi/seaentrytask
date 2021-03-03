@@ -7,7 +7,8 @@ from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
 
-from commonlib.constant import HttpStatus
+from commonlib.constant import RANDOM_KEY_LENGTH, LOGIN_CACHE_TIMEOUT, SESSION_TIMEOUT, TOKEN_LENGTH
+from commonlib.db_crud.role import get_user_role
 from commonlib.db_crud.user import insert_user, get_user_by_id, get_user_by_username
 from commonlib.schema import user_login_schema, user_register_schema, user_logout_schema
 from commonlib.utils.response import error_response, json_response
@@ -19,8 +20,8 @@ class UserView(View):
 		user_id = int(self.kwargs.get('user_id'))
 		user = get_user_by_id(user_id)
 		if user is None:
-			return error_response(404, 'User not found')
-		return json_response({'id': user.id, 'username': user.username, 'fullname': user.fullname})
+			return json_response(error='User not found')
+		return json_response(data={'id': user.id, 'username': user.username, 'fullname': user.fullname})
 
 
 class UserRegisterView(View):
@@ -38,32 +39,31 @@ class UserRegisterView(View):
 				'salted_password': hasher(password, salt)
 			})
 			if user is None:
-				return error_response(500, '')
-			return json_response({'msg': 'registered'})
+				return json_response(error='Register user unsuccessful')
+			return json_response(data={'msg': 'registered'})
 		except ValidationError:
-			return error_response(400, 'Invalid field(s) input')
+			return json_response(error='Wrong data type')
 
 
 class UserPreloginView(View):
 	def post(self, *args, **kwargs):
 		body_json = json.loads(self.request.body)
 		username = body_json.get('username')
-		if cache.get('{}_userinfo'.format(username)) is None:
-			user = model_to_dict(get_user_by_username(username))
-		else:
-			user = cache.get('{}_userinfo'.format(username))
 
+		user = cache.get('{}_userinfo'.format(username))
 		if user is None:
-			error_response(HttpStatus.BadRequest, 'Username does not exist or wrong password')
+			user = model_to_dict(get_user_by_username(username))
+			if user is None:
+				return json_response(error='Username does not exist')
 
-		if cache.get('{}_key'.format(username)) is None:
+		random_key = cache.get('{}_key'.format(username))
+		if random_key is None:
 			random_key = string_generator(RANDOM_KEY_LENGTH)
-		else:
-			random_key = cache.get('{}_key'.format(username))
 
 		cache.set('{}_key'.format(username), random_key, LOGIN_CACHE_TIMEOUT)
-		cache.set('{}_userinfo'.format(username), user, LOGIN_CACHE_TIMEOUT)
-		return json_response({'key': random_key})
+		cache.set('{}_userinfo'.format(username), user, SESSION_TIMEOUT)
+
+		return json_response(data={'key': random_key})
 
 
 class UserLoginView(View):
@@ -71,28 +71,25 @@ class UserLoginView(View):
 		body_json = json.loads(self.request.body)
 		try:
 			validate(body_json, user_login_schema)
-
 			username = body_json.get('username')
 			encrypted_password = body_json.get('password')
-			role = int(body_json.get('role'))
-
-			if cache.get('{}_key'.format(username)) is None:
-				return error_response(HttpStatus.BadRequest, 'Username does not exist or wrong password')
-
 			user_key = cache.get('{}_key'.format(username))
-			cache.delete('{}_key'.format(username))
 
+			if user_key is None:
+				return json_response(error='Username does not exist or wrong password')
+
+			cache.delete('{}_key'.format(username))
 			password = decrypt(encrypted_password, user_key)
-			user, role, is_valid = validate_user(username, password, role)
+			user, is_valid = validate_user(username, password)
 
 			if not is_valid:
-				return error_response(HttpStatus.BadRequest, 'Username does not exist or wrong password')
+				return json_response(error='Username does not exist or wrong password')
 
 			token = string_generator(TOKEN_LENGTH)
-			cache.set(token, {"id": user['id'], "role": role, "username": user['username']}, SESSION_TIMEOUT)
-			return json_response({'token': token, 'user_id': user['id'], 'role': role})
+			cache.set(token, {'id': user['id'], 'role': get_user_role(user['id']), 'username': user['username']}, SESSION_TIMEOUT)
+			return json_response(data={'token': token, 'user_id': user['id']})
 		except ValidationError:
-			return error_response(HttpStatus.BadRequest, 'Username does not exist or wrong password')
+			return json_response(error='Input validation error')
 
 
 class UserLogoutView(View):
@@ -102,7 +99,7 @@ class UserLogoutView(View):
 			validate(body_json, user_logout_schema)
 			if validate_token_func(body_json["token"], body_json["user_id"]):
 				cache.delete(body_json["token"])
-				return json_response({'msg': 'logged out'})
-			return error_response(HttpStatus.BadRequest, '')
+				return json_response(data={'msg': 'logged out'})
+			return json_response(error='Bad request')
 		except ValidationError:
-			return error_response(HttpStatus.BadRequest, 'invalid input')
+			return json_response(error='Bad request')

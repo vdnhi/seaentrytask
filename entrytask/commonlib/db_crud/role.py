@@ -17,7 +17,5 @@ def get_rolename(role_id):
 
 
 def get_user_role(user_id):
-	mapping = UserRoleMapping.objects.filter(user_id=user_id)
-	if len(mapping) == 0:
-		return ''
-	return get_rolename(mapping.model.role_id)
+	mapping = UserRoleMapping.objects.filter(user_id=user_id).first()
+	return mapping.role_id

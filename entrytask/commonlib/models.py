@@ -13,6 +13,7 @@ class User(models.Model):
 	salted_password = models.CharField(max_length=120)
 
 	class Meta:
+		indexes = [models.Index(fields=['username'])]
 		db_table = 'user_tab'
 
 
@@ -48,7 +49,11 @@ class Event(models.Model):
 	class Meta:
 		db_table = 'event_tab'
 		ordering = ['id']
-		indexes = [models.Index(fields=['create_time'])]
+		indexes = [
+			models.Index(fields=['create_time']),
+			models.Index(fields=['location'])
+		]
+		index_together = ['start_date', 'end_date']
 
 
 class Image(models.Model):
@@ -75,6 +80,7 @@ class Channel(models.Model):
 
 	class Meta:
 		db_table = 'channel_tab'
+		indexes = [models.Index(fields=['name'])]
 
 
 class EventChannelMapping(models.Model):
@@ -84,7 +90,10 @@ class EventChannelMapping(models.Model):
 
 	class Meta:
 		db_table = 'event_channel_tab'
-		indexes = [models.Index(fields=['event_id'])]
+		indexes = [
+			models.Index(fields=['event_id']),
+			models.Index(fields=['channel_id'])
+		]
 
 
 class Comment(models.Model):
@@ -107,7 +116,7 @@ class Like(models.Model):
 
 	class Meta:
 		db_table = 'like_tab'
-		indexes = [models.Index(fields=['event_id'])]
+		indexes = [models.Index(fields=['event_id', 'user_id'])]
 
 
 class Participation(models.Model):
@@ -118,4 +127,4 @@ class Participation(models.Model):
 
 	class Meta:
 		db_table = 'participation_tab'
-		indexes = [models.Index(fields=['event_id'])]
+		indexes = [models.Index(fields=['event_id', 'user_id'])]
