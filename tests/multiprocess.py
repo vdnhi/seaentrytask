@@ -40,20 +40,23 @@ def encrypt(message, passphrase):
 def api_call(id):
     username = 'user{}'.format(id)
     response = requests.post(
-        'http://{}/user/prelogin/'.format(HOST), json={'username': username})
-    if response.status_code == 200:
+        'http://{}/api/user/prelogin/'.format(HOST), json={'username': username})
+    data = response.json()
+    if response.status_code == 200 and data['error'] is None:
+        password = encrypt(username, data['data']['key'].encode('utf-8'))
+        response = requests.post('http://{}/api/user/login/'.format(HOST),
+                                 json={'username': username, 'password': password})
         data = response.json()
-        password = encrypt(username, data['key'].encode('utf-8'))
-        response = requests.post('http://{}/user/login/'.format(HOST),
-                                 json={'username': username, 'password': password, 'role': 1})
-        if response.status_code == 200:
+        if response.status_code == 200 and data is None:
             return True
 
 
 def main():
+    pool_size = 40
+    print('Testing with pool_size = {}'.format(pool_size))
     for i in range(5):
         tic = time.time()
-        p = Pool(20)
+        p = Pool(pool_size)
         p.map(api_call, range(500 * i, 500 * (i + 1)))
         toc = time.time()
         print(500*i, 500 * (i+1), toc - tic)

@@ -4,10 +4,10 @@ import time
 import bcrypt
 from django.core.management import BaseCommand
 
-from commonlib.db_crud import insert_role, insert_user_role
+from commonlib.db_crud.role import insert_role, insert_user_role
 from commonlib.db_crud.user import insert_user
 from commonlib.models import Event, User, UserRoleMapping, Channel, Image, Comment, Role, EventChannelMapping, Like, \
-    Participation, EventImageMapping
+	Participation, EventImageMapping
 from commonlib.utils.utils import hasher
 
 NUM_ADMIN = 10

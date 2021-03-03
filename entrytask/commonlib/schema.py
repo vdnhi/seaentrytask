@@ -1,10 +1,9 @@
 user_login_schema = {
 	'type': 'object',
-	'required': ['username', 'password', 'role'],
+	'required': ['username', 'password'],
 	'properties': {
 		'username': {'type': 'string'},
 		'password': {'type': 'string'},
-		'role': {'type': 'number'}
 	}
 }
 

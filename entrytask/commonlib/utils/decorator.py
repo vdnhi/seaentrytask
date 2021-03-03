@@ -4,6 +4,7 @@ from django.core.cache import cache
 from jsonschema import ValidationError
 
 from commonlib.constant import HttpStatus
+from commonlib.utils.logger import log
 from commonlib.utils.response import error_response
 
 
@@ -40,7 +41,7 @@ def error_handler(func):
 		try:
 			return func(*args, **kwargs)
 		except Exception as exception:
-			print(exception.message)
+			log.error(exception.message)
 			return error_response(HttpStatus.InternalServerError, exception.message)
 
 	return _inner_function
