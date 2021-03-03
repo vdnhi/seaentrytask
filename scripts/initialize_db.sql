@@ -19,7 +19,9 @@ CREATE TABLE user_tab (
     fullname NVARCHAR(100) NOT NULL,
     email VARCHAR(70) NOT NULL,
     salt VARCHAR(60) NOT NULL,
-    salted_password VARCHAR(120) NOT NULL
+    salted_password VARCHAR(120) NOT NULL,
+
+    INDEX (username)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 -- ROLE TABLE
@@ -48,7 +50,9 @@ CREATE TABLE event_tab (
     update_time INT UNSIGNED NOT NULL,
     location NVARCHAR(100),
 
-    INDEX (create_time)
+    INDEX (create_time),
+    INDEX (start_date, end_date),
+    INDEX (location)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 -- IMAGE TABLE
@@ -68,7 +72,8 @@ CREATE TABLE event_image_tab (
 -- CHANNEL TABLE
 CREATE TABLE channel_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL,
+    INDEX (name)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 -- EVENT CHANNEL TABLE
@@ -76,7 +81,8 @@ CREATE TABLE event_channel_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
     event_id BIGINT UNSIGNED NOT NULL,
     channel_id BIGINT UNSIGNED NOT NULL,
-    INDEX (event_id)
+    INDEX (event_id),
+    INDEX (channel_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 
@@ -98,7 +104,7 @@ CREATE TABLE like_tab (
     user_id BIGINT UNSIGNED NOT NULL,
     event_id BIGINT UNSIGNED NOT NULL,
 
-    INDEX (event_id)
+    INDEX (event_id, user_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 
@@ -109,5 +115,5 @@ CREATE TABLE participation_tab (
     event_id BIGINT UNSIGNED NOT NULL,
     create_time INT UNSIGNED NOT NULL,
 
-    INDEX (event_id)
+    INDEX (event_id, user_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
