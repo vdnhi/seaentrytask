@@ -32,7 +32,7 @@ def unpad(data):
 
 def bytes_to_key(data, salt, output=48):
 	# extended from https://gist.github.com/gsakkis/4546068
-	if len(salt) != 8 or len(salt) == 0:
+	if len(salt) != 8:
 		raise ValidationError("Wrong password")
 	data += salt
 	key = md5(data).digest()

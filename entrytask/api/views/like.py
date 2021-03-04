@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django.views.generic.base import View
 
-from commonlib.constant import OFFSET_LIMIT
+from commonlib.constant import PAGING_SIZE
 from commonlib.db_crud.like import get_like_of_event, insert_like, remove_like
 from commonlib.db_crud.user import get_user_by_id
 from commonlib.utils.decorator import error_handler
@@ -13,7 +13,7 @@ class LikeEventView(View):
 	def get(self, *args, **kwargs):
 		event_id = int(self.kwargs.get('event_id'))
 		base = int(self.request.GET.get('base', 0))
-		offset = min(int(self.request.GET.get('offset', 10)), OFFSET_LIMIT)
+		offset = min(int(self.request.GET.get('offset', PAGING_SIZE)), PAGING_SIZE)
 
 		likes = get_like_of_event(event_id, base, offset)
 		users_id = [like.user_id for like in likes]

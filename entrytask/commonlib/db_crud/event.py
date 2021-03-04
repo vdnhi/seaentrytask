@@ -1,9 +1,5 @@
-import time
-
-from django.db.models import Subquery, OuterRef
 from django.forms import model_to_dict
 
-from commonlib.db_crud.channel import get_channel_id_by_name
 from commonlib.models import Event, EventChannelMapping, Channel
 
 
@@ -29,8 +25,10 @@ def get_events(conditions, base, offset):
 
 def get_events_with_channels(conditions, channels, base, offset):
 	channel_ids = Channel.objects.filter(name__in=channels).values_list('id')
-	mappings = list(EventChannelMapping.objects.filter(channel_id__in=channel_ids).order_by('-id').values_list('event_id', flat=True))
-	events = list(Event.objects.filter(**conditions).filter(id__in=mappings).order_by('-create_time', '-id').values_list('id', flat=True)[base:base+offset])
+	mappings = list(
+		EventChannelMapping.objects.filter(channel_id__in=channel_ids).order_by('-id').values_list('event_id', flat=True))
+	events = list(
+		Event.objects.filter(**conditions).filter(id__in=mappings).order_by('-create_time', '-id').values_list('id', flat=True)[base:base + offset])
 	events = list(Event.objects.filter(id__in=events).order_by('-create_time', '-id'))
 	events = [model_to_dict(event) for event in events]
 	return events

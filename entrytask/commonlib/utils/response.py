@@ -9,9 +9,3 @@ def json_response(error=None, data=None):
 		'error': error,
 		'data': data
 	})
-
-
-def error_response(status_code, error_msg):
-	response = JsonResponse({'error': error_msg})
-	response.status_code = status_code
-	return response
