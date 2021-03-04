@@ -12,6 +12,7 @@ urlpatterns = [
 	url(r'^event/(?P<event_id>[0-9]+)/comment/$', comment.CommentEventView.as_view(), name='comment-event'),
 	url(r'^event/channel/$', channel.ChannelView.as_view(), name='event-channel'),
 	url(r'^event/$', event.ApiEventView.as_view(), name='event'),
+	url(r'^user/preregister/$', user.UserPreRegisterView.as_view(), name='user-preregister'),
 	url(r'^user/register/$', user.UserRegisterView.as_view(), name='user-register'),
 	url(r'^user/prelogin/$', user.UserPreloginView.as_view(), name='user-prelogin'),
 	url(r'^user/login/$', user.UserLoginView.as_view(), name='user-login'),

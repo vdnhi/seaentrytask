@@ -12,4 +12,4 @@ class ChannelView(View):
 		base = int(self.request.GET.get('base', 0))
 		offset = min(int(self.request.GET.get('offset', 10)), OFFSET_LIMIT)
 		channels = get_channels(base, offset)
-		return json_response('', channels)
+		return json_response(data=channels)

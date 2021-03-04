@@ -32,7 +32,8 @@ def unpad(data):
 
 def bytes_to_key(data, salt, output=48):
 	# extended from https://gist.github.com/gsakkis/4546068
-	assert len(salt) == 8, len(salt)
+	if len(salt) != 8 or len(salt) == 0:
+		raise ValidationError("Wrong password")
 	data += salt
 	key = md5(data).digest()
 	final_key = key
@@ -44,7 +45,8 @@ def bytes_to_key(data, salt, output=48):
 
 def decrypt(encrypted, passphrase):
 	encrypted = base64.b64decode(encrypted)
-	assert encrypted[0:8] == b"Salted__"
+	if encrypted[0:8] != b"Salted__":
+		raise ValidationError('Wrong password')
 	salt = encrypted[8:16]
 	key_iv = bytes_to_key(passphrase, salt, 32 + 16)
 	key = key_iv[:32]
@@ -70,8 +72,8 @@ def validate_token_func(token, user_id, role=0, require_admin=False):
 	if cache.get(token) is None:
 		raise ValidationError('')
 
-	cached_data = cache.get(token)
-	if user_id != cached_data['id']:
+	user_data = cache.get(token)
+	if user_id != user_data['id']:
 		raise ValidationError('wrong user id')
 
 	if require_admin and role != 2:

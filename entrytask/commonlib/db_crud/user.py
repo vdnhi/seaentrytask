@@ -20,3 +20,7 @@ def get_user_by_id(user_id):
 def get_user_by_username(username):
 	user = User.objects.filter(username=username).first()
 	return user
+
+
+def is_exist_username(username):
+	return User.objects.filter(username=username).count() > 0

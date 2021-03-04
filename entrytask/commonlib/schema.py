@@ -22,7 +22,7 @@ user_register_schema = {
 	'properties': {
 		'username': {'type': 'string'},
 		'password': {'type': 'string'},
-		'email': {'type': 'string'},
+		'email': {'type': 'string', 'format': 'email'},
 		'fullname': {'type': 'string'}
 	}
 }
@@ -41,7 +41,7 @@ get_event_schema = {
 
 event_schema = {
 	'type': 'object',
-	'required': ['title', 'content', 'location', 'start_date', 'end_date', 'create_uid', 'token', 'role'],
+	'required': ['title', 'content', 'location', 'start_date', 'end_date', 'create_uid'],
 	'properties': {
 		'title': {'type': 'string'},
 		'content': {'type': 'string'},
@@ -58,9 +58,7 @@ event_schema = {
 				}
 			}
 		},
-		'create_uid': {'type': 'number'},
-		'token': {'type': 'string'},
-		'role': {'type': 'number'}
+		'create_uid': {'type': 'number'}
 	}
 }
 
@@ -86,15 +84,6 @@ event_patch_schema = {
 		'create_uid': {'type': 'number'},
 		'token': {'type': 'string'},
 		'role': {'type': 'number'}
-	}
-}
-
-like_schema = {
-	'type': 'object',
-	'required': ['user_id', 'token'],
-	'properties': {
-		'user_id': {'type': 'number'},
-		'token': {'type': 'string'},
 	}
 }
 
