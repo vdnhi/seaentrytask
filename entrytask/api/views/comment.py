@@ -5,7 +5,7 @@ from django.views.generic.base import View
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from commonlib.constant import OFFSET_LIMIT
+from commonlib.constant import PAGING_SIZE
 from commonlib.db_crud.comment import get_event_comments, insert_comment
 from commonlib.schema import comment_schema
 from commonlib.utils.decorator import error_handler
@@ -17,7 +17,7 @@ class CommentEventView(View):
 	def get(self, *args, **kwargs):
 		event_id = int(self.kwargs.get('event_id'))
 		base = self.request.GET.get('base', 0)
-		offset = min(int(self.request.GET.get('offset', 10)), OFFSET_LIMIT)
+		offset = min(int(self.request.GET.get('offset', PAGING_SIZE)), PAGING_SIZE)
 		comments = get_event_comments(event_id, base, offset)
 
 		return json_response(data={'base': base, 'offset': len(comments), 'comments': comments})

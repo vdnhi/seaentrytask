@@ -1,4 +1,5 @@
 import json
+import time
 
 import bcrypt
 from django.core.cache import cache
@@ -108,10 +109,12 @@ class UserLoginView(View):
 			user_key = cache.get('{}_key'.format(username))
 
 			if user_key is None:
-				return json_response(error='Username does not exist or wrong password')
+				return json_response(error='User already logged in')
 
 			cache.delete('{}_key'.format(username))
+			now = time.time()
 			password = decrypt(encrypted_password, user_key)
+			print('Decrypt time', (time.time() - now) * 1000)
 			user, is_valid = validate_user(username, password)
 
 			if not is_valid:

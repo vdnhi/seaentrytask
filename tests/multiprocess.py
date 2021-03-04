@@ -15,8 +15,12 @@ def pad(data):
     length = BLOCK_SIZE - (len(data) % BLOCK_SIZE)
     return data + (chr(length)*length).encode()
 
+def unpad(data):
+    return data[:-(data[-1] if type(data[-1]) == int else ord(data[-1]))]
 
 def bytes_to_key(data, salt, output=48):
+    # extended from https://gist.github.com/gsakkis/4546068
+    assert len(salt) == 8, len(salt)
     data += salt
     key = md5(data).digest()
     final_key = key
@@ -24,7 +28,6 @@ def bytes_to_key(data, salt, output=48):
         key = md5(key + data).digest()
         final_key += key
     return final_key[:output]
-
 
 def encrypt(message, passphrase):
     salt = Random.new().read(8)
@@ -41,11 +44,13 @@ def api_call(id):
         'http://{}/api/user/prelogin/'.format(HOST), json={'username': username})
     data = response.json()
     if response.status_code == 200 and data['error'] is None:
+        now = time.time()
         password = encrypt(username, data['data']['key'].encode('utf-8'))
+        print('Encrypt time', time.time() - now)
         response = requests.post('http://{}/api/user/login/'.format(HOST),
                                  json={'username': username, 'password': password})
         data = response.json()
-        if response.status_code == 200 and data is None:
+        if response.status_code == 200 and data['error'] is None:
             return True
 
 

@@ -2,10 +2,10 @@ from django.core.cache import cache
 from django.forms import model_to_dict
 from django.views.generic.base import View
 
-from commonlib.constant import OFFSET_LIMIT
-from commonlib.db_crud.channel import get_event_channels
+from commonlib.constant import PAGING_SIZE
+from commonlib.db_crud.channel import get_events_channels
 from commonlib.db_crud.event import get_events_with_channels, get_events, get_event_by_id
-from commonlib.db_crud.image import get_event_images
+from commonlib.db_crud.image import get_events_images
 from commonlib.db_crud.like import get_event_like_count, is_user_liked_event, get_events_like_count, \
 	get_events_user_liked
 from commonlib.db_crud.participation import get_event_participation_count, is_user_participated_event, \
@@ -24,7 +24,7 @@ class ApiEventView(View):
 		}
 
 		base = int(self.request.GET.get('base', 0))
-		offset = min(int(self.request.GET.get('offset', 10)), OFFSET_LIMIT)
+		offset = min(int(self.request.GET.get('offset', PAGING_SIZE)), PAGING_SIZE)
 
 		filtered_conditions = {k: v for k, v in raw_conditions.items() if v is not None}
 		if self.request.GET.get('channels') is not None:
@@ -34,26 +34,28 @@ class ApiEventView(View):
 			events = get_events(filtered_conditions, base, offset)
 
 		if events is None or len(events) == 0:
-			return json_response('', [])
+			return json_response(data=[])
 
 		token = self.request.META.get('HTTP_AUTHORIZATION')[6:]
 		user_data = cache.get(token)
 
 		event_ids = [event['id'] for event in events]
+
 		count_like_map = get_events_like_count(event_ids)
 		count_participation_map = get_events_participation_count(event_ids)
 		events_user_liked = get_events_user_liked(user_data['id'])
 		events_user_participated = get_events_user_participated(user_data['id'])
+		events_channels = get_events_channels(event_ids)
+		event_images = get_events_images(event_ids)
 
 		for event in events:
-			event['channels'] = get_event_channels(event.get('id'))
-			event['image_urls'] = get_event_images(event.get('id'))
+			event['channels'] = events_channels.get(event.get('id'), None)
+			event['image_urls'] = event_images.get(event.get('id'), None)
 			event['count_like'] = count_like_map[event.get('id')] if event.get('id') in count_like_map else 0
 			event['count_participation'] = count_participation_map[event.get('id')] if event.get(
 				'id') in count_participation_map else 0
 			event['has_liked'] = event['id'] in events_user_liked
 			event['has_participated'] = event['id'] in events_user_participated
-
 		return json_response(data=events)
 
 
