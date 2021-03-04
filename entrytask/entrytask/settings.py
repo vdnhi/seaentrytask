@@ -26,7 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
 	'localhost',
-	'172.16.230.130'
+	'172.16.230.130',
+	'127.0.0.1'
 ]
 
 # Application definition
@@ -50,6 +51,7 @@ MIDDLEWARE = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'commonlib.middleware.VerifyTokenMiddleware',
+	'commonlib.middleware.RequestLogMiddleware'
 ]
 
 ROOT_URLCONF = 'entrytask.urls'
@@ -149,7 +151,7 @@ LOGGING = {
 			'format': '%(levelname)s %(message)s'
 		},
 		'timestampthread': {
-			'format': "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s] [%(name)-20.20s]  %(message)s",
+			'format': "%(asctime)s [%(levelname)-5.5s] [%(name)-20.20s]  %(message)s",
 		},
 	},
 	'handlers': {
@@ -164,17 +166,18 @@ LOGGING = {
 		'console': {
 			'level': min_level,
 			'class': 'logging.StreamHandler',
+			'formatter': 'verbose'
 		},
 	},
 	'loggers': {
 		'django': {
-			'handlers': ['logfile', 'console'],
+			'handlers': ['console'],
 			'level': min_django_level,
 			'propagate': False,
 		},
 
-		'': {
-			'handlers': ['logfile', 'console'],
+		'entrytask': {
+			'handlers': ['logfile'],
 			'level': min_level,
 		},
 	},

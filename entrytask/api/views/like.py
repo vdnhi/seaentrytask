@@ -1,14 +1,11 @@
-import json
-
+from django.core.cache import cache
 from django.views.generic.base import View
-from jsonschema import validate, ValidationError
 
-from commonlib.constant import OFFSET_LIMIT, HttpStatus
+from commonlib.constant import OFFSET_LIMIT
 from commonlib.db_crud.like import get_like_of_event, insert_like, remove_like
 from commonlib.db_crud.user import get_user_by_id
-from commonlib.schema import like_schema
 from commonlib.utils.decorator import error_handler
-from commonlib.utils.response import json_response, error_response
+from commonlib.utils.response import json_response
 
 
 class LikeEventView(View):
@@ -23,27 +20,24 @@ class LikeEventView(View):
 		user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
 		user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
 
-		return json_response(user_data)
+		return json_response(data=user_data)
 
 	@error_handler
 	def post(self, *args, **kwargs):
 		event_id = int(self.kwargs.get('event_id'))
-		body_json = json.loads(self.request.body)
-		try:
-			validate(body_json, like_schema)
-			insert_like(event_id, body_json["user_id"])
-			return json_response({'msg': 'liked'})
-		except ValidationError:
-			return error_response(HttpStatus.Unauthorized, 'invalid input')
+		header_token = self.request.META.get('HTTP_AUTHORIZATION', '')
+		token = header_token[6:]
+		user_data = cache.get(token)
+		insert_like(event_id, user_data['id'])
+		return json_response(data={'msg': 'liked'})
 
 	@error_handler
 	def delete(self, *args, **kwargs):
 		event_id = int(self.kwargs.get('event_id'))
-		try:
-			user_id = int(self.request.GET.get('user_id', 0))
-			row_affected = remove_like(event_id, user_id)
-			if row_affected == 0:
-				return error_response(HttpStatus.NotFound, 'not found')
-			return json_response({'msg': 'deleted'})
-		except ValidationError:
-			return error_response(HttpStatus.Unauthorized, '')
+		header_token = self.request.META.get('HTTP_AUTHORIZATION', '')
+		token = header_token[6:]
+		user_data = cache.get(token)
+		row_affected = remove_like(event_id, user_data['id'])
+		if row_affected == 0:
+			return json_response(error='User Id or Event id not found')
+		return json_response(data={'msg': 'deleted'})

@@ -76,7 +76,7 @@ class UploadImageView(View):
 			ext = os.path.splitext(afile.name)[1]
 			if not ext.lower() in VALID_IMAGE_EXTENSIONS:
 				continue
-			filename = default_storage.save(tempfile.NamedTemporaryFile(prefix='image') + ext, afile)
+			filename = default_storage.save(tempfile.NamedTemporaryFile(prefix='image').name.split('/')[-1] + ext, afile)
 			image_id = insert_image('/media/' + filename)
 			insert_image_to_event(event_id, image_id)
 

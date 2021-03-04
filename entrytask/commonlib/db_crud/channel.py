@@ -12,7 +12,7 @@ def insert_event_channel(event_id, channel_id):
 
 
 def get_channels(base, offset):
-	channels = list(Channel.objects.all()[base:base + offset])
+	channels = list(Channel.objects.all().order_by('id')[base:base + offset])
 	channels = [{'id': channel.id, 'name': channel.name} for channel in channels]
 	return channels
 
