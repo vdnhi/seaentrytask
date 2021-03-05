@@ -1,12 +1,11 @@
 import json
-import time
 
 import bcrypt
-from django.core.cache import cache
 from django.forms.models import model_to_dict
 from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
+from memcache import Client
 
 from commonlib.constant import RANDOM_KEY_LENGTH, LOGIN_CACHE_TIMEOUT, SESSION_TIMEOUT, TOKEN_LENGTH
 from commonlib.db_crud.role import get_user_role
@@ -16,6 +15,8 @@ from commonlib.utils.decorator import error_handler
 from commonlib.utils.response import json_response
 from commonlib.utils.utils import string_generator, decrypt, hasher, validate_user, validate_token_func
 from commonlib.utils.validation import validate_username, validate_email, validate_fullname
+
+cache = Client(['127.0.0.1:11211'])
 
 
 class UserView(View):
@@ -112,9 +113,7 @@ class UserLoginView(View):
 				return json_response(error='User already logged in')
 
 			cache.delete('{}_key'.format(username))
-			now = time.time()
 			password = decrypt(encrypted_password, user_key)
-			print('Decrypt time', (time.time() - now) * 1000)
 			user, is_valid = validate_user(username, password)
 
 			if not is_valid:

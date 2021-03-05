@@ -44,9 +44,7 @@ def api_call(id):
         'http://{}/api/user/prelogin/'.format(HOST), json={'username': username})
     data = response.json()
     if response.status_code == 200 and data['error'] is None:
-        now = time.time()
         password = encrypt(username, data['data']['key'].encode('utf-8'))
-        print('Encrypt time', time.time() - now)
         response = requests.post('http://{}/api/user/login/'.format(HOST),
                                  json={'username': username, 'password': password})
         data = response.json()
@@ -55,7 +53,7 @@ def api_call(id):
 
 
 def main():
-    pool_size = 40
+    pool_size = 42
     print('Testing with pool_size = {}'.format(pool_size))
     for i in range(5):
         tic = time.time()
