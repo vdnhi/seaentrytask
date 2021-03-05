@@ -62,8 +62,5 @@ class RequestLogMiddleware(MiddlewareMixin):
 		return response
 
 	def process_exception(self, request, exception):
-		try:
-			raise exception
-		except Exception:
-			log.exception(msg="Unhandled Exception")
-		return exception
+		log.exception(msg="Unhandled Exception")
+		return None

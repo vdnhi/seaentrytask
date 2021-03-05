@@ -63,9 +63,9 @@ def validate_user(username, password):
 	try:
 		user = cache.get('{}_userinfo'.format(username))
 		return user, user['salted_password'] == hasher(password, user['salt'])
-	except DatabaseError as exception:
-		log.error(exception)
-		return -1, -1, False
+	except Exception as exception:
+		log.error(exception.message)
+		return -1, False
 
 
 def validate_token_func(token, user_id, role=0, require_admin=False):
