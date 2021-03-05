@@ -1,7 +1,7 @@
-from django.core.cache import cache
 from django.forms import model_to_dict
 from django.views.generic.base import View
 
+from commonlib.cache import cache
 from commonlib.constant import PAGING_SIZE
 from commonlib.db_crud.channel import get_events_channels
 from commonlib.db_crud.event import get_events_with_channels, get_events, get_event_by_id

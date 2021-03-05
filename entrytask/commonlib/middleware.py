@@ -1,9 +1,9 @@
 import json
 import time
 
-from django.core.cache import cache
 from django.utils.deprecation import MiddlewareMixin
 
+from commonlib.cache import cache
 from commonlib.utils.logger import log
 from commonlib.utils.response import json_response
 

@@ -5,24 +5,23 @@ from django.forms.models import model_to_dict
 from django.views.generic import View
 from jsonschema import ValidationError
 from jsonschema.validators import validate
-from memcache import Client
 
+from commonlib.cache import cache
 from commonlib.constant import RANDOM_KEY_LENGTH, LOGIN_CACHE_TIMEOUT, SESSION_TIMEOUT, TOKEN_LENGTH
 from commonlib.db_crud.role import get_user_role
-from commonlib.db_crud.user import insert_user, get_user_by_id, get_user_by_username, is_exist_username
+from commonlib.db_crud.user import insert_user, get_user_by_username, is_exist_username
 from commonlib.schema import user_login_schema, user_register_schema, user_logout_schema
 from commonlib.utils.decorator import error_handler
+from commonlib.utils.logger import log
 from commonlib.utils.response import json_response
 from commonlib.utils.utils import string_generator, decrypt, hasher, validate_user, validate_token_func
 from commonlib.utils.validation import validate_username, validate_email, validate_fullname
 
-cache = Client(['127.0.0.1:11211'])
-
 
 class UserView(View):
 	def get(self, *args, **kwargs):
-		user_id = int(self.kwargs.get('user_id'))
-		user = get_user_by_id(user_id)
+		username = self.kwargs.get('username')
+		user = get_user_by_username(username)
 		if user is None:
 			return json_response(error='User not found')
 		return json_response(data={'id': user.id, 'username': user.username, 'fullname': user.fullname})
@@ -94,8 +93,8 @@ class UserPreloginView(View):
 		if random_key is None:
 			random_key = string_generator(RANDOM_KEY_LENGTH)
 
-		cache.set('{}_key'.format(username), random_key, LOGIN_CACHE_TIMEOUT)
-		cache.set('{}_userinfo'.format(username), user, SESSION_TIMEOUT)
+		cache.set('{}_key'.format(username), random_key, time=LOGIN_CACHE_TIMEOUT, noreply=True)
+		cache.set('{}_userinfo'.format(username), user, time=SESSION_TIMEOUT, noreply=True)
 
 		return json_response(data={'key': random_key})
 
@@ -110,7 +109,8 @@ class UserLoginView(View):
 			user_key = cache.get('{}_key'.format(username))
 
 			if user_key is None:
-				return json_response(error='User already logged in')
+				log.info(user_key)
+				return json_response(error='Invalid login operator')
 
 			cache.delete('{}_key'.format(username))
 			password = decrypt(encrypted_password, user_key)
@@ -121,7 +121,7 @@ class UserLoginView(View):
 
 			token = string_generator(TOKEN_LENGTH)
 			cache.set(token, {'id': user['id'], 'role': get_user_role(user['id']), 'username': user['username']},
-			          SESSION_TIMEOUT)
+			          time=SESSION_TIMEOUT)
 			return json_response(data={'token': token, 'user_id': user['id']})
 		except ValidationError:
 			return json_response(error='Input validation error')

@@ -17,6 +17,6 @@ urlpatterns = [
 	url(r'^user/prelogin/$', user.UserPreloginView.as_view(), name='user-prelogin'),
 	url(r'^user/login/$', user.UserLoginView.as_view(), name='user-login'),
 	url(r'^user/logout/$', user.UserLogoutView.as_view(), name='user-logout'),
-	url(r'^user/(?P<user_id>[0-9]+)/$', user.UserView.as_view(), name='user'),
+	url(r'^user/(?P<username>[a-z0-9]+)/$', user.UserView.as_view(), name='user'),
 	url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})
 ]
