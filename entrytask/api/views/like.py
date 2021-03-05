@@ -1,6 +1,6 @@
-from django.core.cache import cache
 from django.views.generic.base import View
 
+from commonlib.cache import cache
 from commonlib.constant import PAGING_SIZE
 from commonlib.db_crud.like import get_like_of_event, insert_like, remove_like
 from commonlib.db_crud.user import get_user_by_id

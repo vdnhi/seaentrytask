@@ -104,7 +104,8 @@ CREATE TABLE like_tab (
     user_id BIGINT UNSIGNED NOT NULL,
     event_id BIGINT UNSIGNED NOT NULL,
 
-    INDEX (event_id, user_id)
+    INDEX (event_id),
+    INDEX (user_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 
@@ -115,5 +116,6 @@ CREATE TABLE participation_tab (
     event_id BIGINT UNSIGNED NOT NULL,
     create_time INT UNSIGNED NOT NULL,
 
-    INDEX (event_id, user_id)
+    INDEX (event_id),
+    INDEX (user_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;

@@ -5,10 +5,9 @@ import string
 from hashlib import md5
 
 from Crypto.Cipher import AES
-from django.core.cache import cache
-from django.db import DatabaseError
 from jsonschema import ValidationError
 
+from commonlib.cache import cache
 from commonlib.utils.logger import log
 
 BLOCK_SIZE = 16

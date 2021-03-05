@@ -1,5 +1,5 @@
 from django.forms import model_to_dict
-from django.http import JsonResponse
+from django.http.response import JsonResponse
 
 
 def json_response(error=None, data=None):
