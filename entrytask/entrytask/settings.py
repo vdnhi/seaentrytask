@@ -26,7 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
 	'localhost',
-	'172.16.230.130',
+	'172.16.230.131',
 	'127.0.0.1'
 ]
 
@@ -92,7 +92,7 @@ DATABASES = {
 CACHES = {
 	'default': {
 		'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-		'LOCATION': '127.0.0.1:11211'
+		'LOCATION': 'unix:/var/run/memcached/memcached.sock'
 	}
 }
 
