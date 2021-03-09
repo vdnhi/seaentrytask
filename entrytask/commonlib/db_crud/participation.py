@@ -1,5 +1,8 @@
 import time
 
+from django.core.cache import cache
+from django.db.models import Count
+
 from commonlib.models import Participation
 
 
@@ -15,17 +18,29 @@ def get_participation_of_event(event_id, base, offset):
 
 
 def get_event_participation_count(event_id):
-	return Participation.objects.filter(event_id=event_id).count()
+	count = cache.get('event_participation_count_' + str(event_id))
+	if count is not None:
+		return count
+	count = Participation.objects.filter(event_id=event_id).count()
+	cache.set('event_participation_count_' + str(event_id), count)
+	return count
 
 
 def get_events_participation_count(event_ids):
-	participation_list = list(Participation.objects.filter(event_id__in=event_ids).values_list('event_id', 'user_id'))
+	uncached = []
 	participation_count = {}
-	for participation in participation_list:
-		if participation[0] not in participation_count:
-			participation_count[participation[0]] = 1
+	for event_id in event_ids:
+		event_participation_count = cache.get('event_participation_count_' + str(event_id))
+		if event_participation_count is not None:
+			participation_count[event_id] = event_participation_count
 		else:
-			participation_count[participation[0]] += 1
+			uncached.append(event_id)
+
+	data_list = list(
+		Participation.objects.filter(event_id__in=uncached).values('event_id').annotate(count=Count('event_id')))
+	for data in data_list:
+		participation_count[data['event_id']] = data['count']
+		cache.set('event_participation_count_' + str(data['event_id']), data['count'])
 	return participation_count
 
 

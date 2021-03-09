@@ -1,12 +1,13 @@
 import json
 
+from django.core.cache import cache
 from django.views.generic.base import View
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from commonlib.constant import PAGING_SIZE
+from commonlib.constant import PAGING_SIZE, SINGLE_DAY
 from commonlib.db_crud.participation import get_participation_of_event, insert_participation, remove_participation
-from commonlib.db_crud.user import get_user_by_id
+from commonlib.db_crud.user import get_user_by_ids
 from commonlib.schema import participation_schema
 from commonlib.utils.decorator import error_handler
 from commonlib.utils.response import json_response
@@ -19,10 +20,13 @@ class ParticipationEventView(View):
 		base = int(self.request.GET.get('base', 0))
 		offset = min(int(self.request.GET.get('offset', PAGING_SIZE)), PAGING_SIZE)
 
-		list_participant = get_participation_of_event(event_id, base, offset)
+		list_participant = cache.get('participation_' + str(event_id))
+		if list_participant is None:
+			list_participant = get_participation_of_event(event_id, base, offset)
+			cache.set('participation_' + str(event_id), list_participant, SINGLE_DAY)
+
 		users_id = [participant.user_id for participant in list_participant]
-		user_raw_data = [get_user_by_id(user_id) for user_id in users_id]
-		user_data = [{'id': user.id, 'username': user.username} for user in user_raw_data]
+		user_data = get_user_by_ids(users_id)
 
 		return json_response(data=user_data)
 
