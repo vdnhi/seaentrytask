@@ -17,6 +17,11 @@ def get_user_by_id(user_id):
 	return user
 
 
+def get_user_by_ids(user_ids):
+	users = User.objects.filter(id__in=user_ids).values_list('id', 'username')
+	return users
+
+
 def get_user_by_username(username):
 	user = User.objects.filter(username=username).first()
 	return user

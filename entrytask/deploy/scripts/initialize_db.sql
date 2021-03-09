@@ -17,9 +17,11 @@ CREATE TABLE user_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     fullname NVARCHAR(100) NOT NULL,
-    email VARCHAR(70) NOT NULL,
+    email VARCHAR(70) NOT NULL UNIQUE,
     salt VARCHAR(60) NOT NULL,
     salted_password VARCHAR(120) NOT NULL,
+    create_time INT UNSIGNED NOT NULL,
+    update_time INT UNSIGNED NOT NULL,
 
     INDEX (username)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
@@ -33,7 +35,7 @@ CREATE TABLE role_tab (
 -- USER ROLE TABLE
 CREATE TABLE user_role_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL UNIQUE,
     role_id BIGINT UNSIGNED NOT NULL,
     INDEX (user_id)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
@@ -95,14 +97,14 @@ CREATE TABLE comment_tab (
     create_time INT UNSIGNED NOT NULL,
     update_time INT UNSIGNED NOT NULL,
 
-    INDEX (event_id)
+    INDEX (event_id, create_time)
 ) COLLATE='utf8mb4_unicode_ci' ENGINE=INNODB;
 
 -- LIKE TABLE
 CREATE TABLE like_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
-    event_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL UNIQUE,
+    event_id BIGINT UNSIGNED NOT NULL UNIQUE,
 
     INDEX (event_id),
     INDEX (user_id)
@@ -112,8 +114,8 @@ CREATE TABLE like_tab (
 -- PARTICIPATION TABLE
 CREATE TABLE participation_tab (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
-    event_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL UNIQUE,
+    event_id BIGINT UNSIGNED NOT NULL UNIQUE,
     create_time INT UNSIGNED NOT NULL,
 
     INDEX (event_id),

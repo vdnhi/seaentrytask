@@ -1,3 +1,6 @@
+from django.core.cache import cache
+from django.db.models import Count
+
 from commonlib.models import Like
 
 
@@ -7,17 +10,28 @@ def insert_like(event_id, user_id):
 
 
 def get_event_like_count(event_id):
-	return Like.objects.filter(event_id=event_id).count()
+	count = cache.get('event_like_count_' + str(event_id))
+	if count is not None:
+		return count
+	count = Like.objects.filter(event_id=event_id).count()
+	cache.st('event_like_count_' + str(event_id), count)
+	return count
 
 
 def get_events_like_count(event_ids):
-	like_list = list(Like.objects.filter(event_id__in=event_ids).values_list('event_id', 'user_id'))
+	uncached = []
 	like_count = {}
-	for like in like_list:
-		if like[0] not in like_count:
-			like_count[like[0]] = 1
+	for event_id in event_ids:
+		count = cache.get('event_like_count_' + str(event_id))
+		if count is not None:
+			like_count[event_id] = count
 		else:
-			like_count[like[0]] += 1
+			uncached.append(event_id)
+
+	like_list = list(Like.objects.filter(event_id__in=uncached).values('event_id').annotate(count=Count('event_id')))
+	for data in like_list:
+		like_count[data['event_id']] = data['count']
+		cache.set('event_like_count_' + str(data['event_id']), data['count'])
 	return like_count
 
 

@@ -26,6 +26,7 @@ class VerifyTokenMiddleware(object):
 		if request.path[:6] == '/admin' and user_data['role'] != 2:
 			return json_response(error='Permission denied')
 
+		request.user_data = user_data
 		return None
 
 
