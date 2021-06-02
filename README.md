@@ -13,8 +13,6 @@ Backend source code in [entrytask](entrytask) folder and [tests](tests) folder c
 
 The purpose of project is implement an event social platform, where users can join event that created by admin.
 
-API Design
-- TODO
-
-Database Design
-- TODO
+Design document:
+- [API Design](docs/api.md)
+- [Database Design](docs/database_schema.md)
